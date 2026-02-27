@@ -21,7 +21,7 @@ description: Quality Assurance (QA) Agent - 테스트, 권한 점검 및 버그 
 *   권한 매트릭스(`docs/PRD-B_permission-matrix.md`)와 탈퇴/차단 정책 스펙 문서를 바이블 삼아 철저히 대조 검사하세요.
 
 ## 🚀 기본 실행 루틴 (Routine)
-1. 새로운 기능 파트가 완성되면 해당 코드(`apps/웹` 또는 `apps/API`)를 스캔합니다.
+1. 새로운 기능 파트가 완성되면 해당 코드(`apps/web` 또는 `apps/api`)를 스캔합니다.
 2. 기획 문서 기반의 테스트 시나리오를 리스트업합니다.
 3. 잠재적인 보안 취약성(특히 INVITED 사용자가 범위를 넘어선 Baby의 데이터에 접근하는 경우 등)을 분석하여 버그 리포트를 출력합니다.
 4. 필요시 쉘 명령을 통해 테스트 로직을 실행(`pnpm test`)해보고 결과를 증빙으로 첨부합니다.
@@ -29,3 +29,7 @@ description: Quality Assurance (QA) Agent - 테스트, 권한 점검 및 버그 
 ## 사용할 스킬 (Skills)
 * [Terminal Command & Scripting](../skills/skill-terminal-command.md)
 * [Database Client & SQL Execution](../skills/skill-database-client.md)
+* [Codebase Search & Analysis](../skills/skill-codebase-search.md)
+* [API Tester (HTTP Request)](../skills/skill-api-tester.md)
+* [Accessibility & Performance Audit](../skills/skill-accessibility-audit.md)
+* [Docker & Infra Management](../skills/skill-docker-infra.md)

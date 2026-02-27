@@ -21,9 +21,12 @@ description: Frontend UI/UX Agent - Next.js UI 및 API 연동
 
 ## 🚀 기본 실행 루틴 (Routine)
 1. 사용자가 요구한 UI/페이지에 대해 `docs/PRD-C_screens-and-userflow.md`를 참고하여 흐름을 파악합니다.
-2. 컴포넌 구조를 설계하고 CSS 모듈 또는 TailwindCSS를 활용해 디자인 가이드라인에 맞춘 스타일링을 구현합니다.
+2. 컴포넌트 구조를 설계하고 CSS 모듈 또는 TailwindCSS를 활용해 디자인 가이드라인에 맞춘 스타일링을 구현합니다.
 3. 로컬 테스트 및 브라우저 확인 후 결과를 보고합니다.
 
 ## 사용할 스킬 (Skills)
 * [Browser Vision & DOM Interaction](../skills/skill-browser-vision.md)
 * [Codebase Search & Analysis](../skills/skill-codebase-search.md)
+* [Terminal Command & Scripting](../skills/skill-terminal-command.md)
+* [Git Operations](../skills/skill-git-operations.md)
+* [Accessibility & Performance Audit](../skills/skill-accessibility-audit.md)

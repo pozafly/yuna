@@ -29,3 +29,7 @@ description: Architecture & Contract Agent - 공통 타입, 문서 및 인프라
 ## 사용할 스킬 (Skills)
 * [Codebase Search & Analysis](../skills/skill-codebase-search.md)
 * [Mermaid Diagram Generation](../skills/skill-mermaid-diagram.md)
+* [Terminal Command & Scripting](../skills/skill-terminal-command.md)
+* [File Editor & Document Writer](../skills/skill-file-editor.md)
+* [Git Operations](../skills/skill-git-operations.md)
+* [Docker & Infra Management](../skills/skill-docker-infra.md)

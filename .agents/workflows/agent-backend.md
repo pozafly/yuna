@@ -29,3 +29,7 @@ description: Backend API Agent - NestJS 비즈니스 로직 및 권한 관리
 ## 사용할 스킬 (Skills)
 * [Terminal Command & Scripting](../skills/skill-terminal-command.md)
 * [Database Client & SQL Execution](../skills/skill-database-client.md)
+* [Codebase Search & Analysis](../skills/skill-codebase-search.md)
+* [API Tester (HTTP Request)](../skills/skill-api-tester.md)
+* [Git Operations](../skills/skill-git-operations.md)
+* [Docker & Infra Management](../skills/skill-docker-infra.md)

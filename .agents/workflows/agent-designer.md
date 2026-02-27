@@ -28,3 +28,6 @@ description: UI/UX Designer Agent - 디자인 시스템 가이드 및 시각적 
 ## 사용할 스킬 (Skills)
 * [Image Generation](../skills/skill-image-generation.md)
 * [Browser Vision & DOM Interaction](../skills/skill-browser-vision.md)
+* [Codebase Search & Analysis](../skills/skill-codebase-search.md)
+* [File Editor & Document Writer](../skills/skill-file-editor.md)
+* [Accessibility & Performance Audit](../skills/skill-accessibility-audit.md)
