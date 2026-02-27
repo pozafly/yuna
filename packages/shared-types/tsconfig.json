@@ -1,0 +1,10 @@
+{
+  "extends": "@yuna/tsconfig/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@yuna/shared-types": ["./src/index.ts"]
+    }
+  },
+  "include": ["src/**/*"]
+}

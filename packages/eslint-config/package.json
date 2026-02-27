@@ -1,0 +1,11 @@
+{
+  "name": "@yuna/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./base.js",
+  "exports": {
+    "./base": "./base.js",
+    "./nextjs": "./nextjs.js",
+    "./nestjs": "./nestjs.js"
+  }
+}

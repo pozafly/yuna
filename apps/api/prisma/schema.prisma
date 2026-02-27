@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  WITHDRAWN
+}
+
+enum Role {
+  OWNER
+  INVITED
+}
+
+enum Visibility {
+  PRIVATE
+  INVITED
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+enum MembershipStatus {
+  ACTIVE
+  BLOCKED
+  WITHDRAWN
+}
+
+enum BabyStatus {
+  ACTIVE
+  DELETED
+}
+
+enum CommentTargetType {
+  POST
+  LETTER
+}
+
+enum NotificationType {
+  NEW_POST
+  NEW_COMMENT
+  NEW_LETTER
+  INVITATION
+}
+
+model User {
+  id               String            @id
+  email            String            @unique
+  name             String
+  status           UserStatus
+  createdAt        DateTime          @default(now())
+  memberships      BabyMembership[]
+  posts            Post[]
+  letters          Letter[]
+  comments         Comment[]
+  sentInvitations  Invitation[]      @relation("SentInvitations")
+  notifications    Notification[]
+  sessions         Session[]
+}
+
+model Baby {
+  id                String           @id
+  name              String
+  gender            String
+  birthDate         DateTime?
+  status            BabyStatus
+  deletedAt         DateTime?
+  downloadExpiresAt DateTime?
+  createdAt         DateTime         @default(now())
+  memberships       BabyMembership[]
+  invitations       Invitation[]
+  posts             Post[]
+  letters           Letter[]
+}
+
+model BabyMembership {
+  id          String           @id
+  babyId      String
+  userId      String
+  role        Role
+  status      MembershipStatus
+  invitedAt   DateTime
+  joinedAt    DateTime?
+  blockedAt   DateTime?
+  withdrawnAt DateTime?
+  baby        Baby             @relation(fields: [babyId], references: [id])
+  user        User             @relation(fields: [userId], references: [id])
+
+  @@unique([babyId, userId])
+  @@index([userId, status])
+  @@index([babyId, status])
+}
+
+model Invitation {
+  id          String           @id
+  babyId      String
+  inviterId   String
+  inviteeEmail String
+  role        Role
+  token       String           @unique
+  expiresAt   DateTime
+  status      InvitationStatus
+  createdAt   DateTime         @default(now())
+  baby        Baby             @relation(fields: [babyId], references: [id])
+  inviter     User             @relation("SentInvitations", fields: [inviterId], references: [id])
+
+  @@index([babyId, status])
+}
+
+model Post {
+  id         String      @id
+  babyId      String
+  authorId    String
+  content     String
+  visibility  Visibility
+  takenAt     DateTime?
+  mediaUrls   Json?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  baby        Baby        @relation(fields: [babyId], references: [id])
+  author      User        @relation(fields: [authorId], references: [id])
+
+  @@index([babyId, createdAt])
+}
+
+model Letter {
+  id         String      @id
+  babyId      String
+  authorId    String
+  title       String
+  content     String
+  visibility  Visibility
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  baby        Baby        @relation(fields: [babyId], references: [id])
+  author      User        @relation(fields: [authorId], references: [id])
+
+  @@index([babyId, createdAt])
+}
+
+model Comment {
+  id         String             @id
+  targetType CommentTargetType
+  targetId   String
+  authorId   String
+  content    String
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime
+  author     User               @relation(fields: [authorId], references: [id])
+
+  @@index([targetType, targetId])
+}
+
+model Notification {
+  id          String           @id
+  recipientId String
+  type        NotificationType
+  targetType  String
+  targetId    String
+  isRead      Boolean
+  createdAt   DateTime         @default(now())
+  recipient   User             @relation(fields: [recipientId], references: [id])
+
+  @@index([recipientId, createdAt])
+}
+
+model MagicLinkToken {
+  token      String   @id
+  email      String
+  expiresAt  DateTime
+  consumed   Boolean
+}
+
+model Session {
+  accessToken    String   @id
+  refreshToken   String   @unique
+  userId         String
+  accessExpiresAt DateTime
+  refreshExpiresAt DateTime
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}

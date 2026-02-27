@@ -1,0 +1,20 @@
+# Node
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+dist
+coverage
+.turbo
+
+# Logs
+*.log
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
