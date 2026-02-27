@@ -1,0 +1,81 @@
+# ===========================================
+# Yuna — 로컬 개발 인프라 (PostgreSQL + MinIO)
+# ===========================================
+# 사용법: cd infra && docker compose up -d
+
+version: '3.9'
+
+services:
+  # PostgreSQL 16 — 관계형 데이터베이스
+  postgres:
+    image: postgres:16-alpine
+    container_name: yuna-postgres
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-yuna_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-yuna_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-yuna_dev}
+    volumes:
+      - yuna_postgres_data:/var/lib/postgresql/data
+    networks:
+      - yuna_local
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-yuna_user}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MinIO — S3 호환 오브젝트 스토리지
+  minio:
+    image: minio/minio:latest
+    container_name: yuna-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000'   # API
+      - '9001:9001'   # Console (웹 UI)
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio_secret}
+    volumes:
+      - yuna_minio_data:/data
+    networks:
+      - yuna_local
+    healthcheck:
+      test: ['CMD', 'mc', 'ready', 'local']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # MinIO 버킷 초기화 (1회 실행 후 종료)
+  minio-init:
+    image: minio/mc:latest
+    container_name: yuna-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command: /init-buckets.sh
+    volumes:
+      - ./minio/init-buckets.sh:/init-buckets.sh:ro
+    environment:
+      MINIO_HOST: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio_secret}
+    networks:
+      - yuna_local
+
+# 볼륨 — 프로젝트 고유 prefix로 충돌 방지
+volumes:
+  yuna_postgres_data:
+    name: yuna_postgres_data
+  yuna_minio_data:
+    name: yuna_minio_data
+
+# 네트워크 — 서비스 간 내부 통신
+networks:
+  yuna_local:
+    name: yuna_local
+    driver: bridge

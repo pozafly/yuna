@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "builder": "webpack",
+        "typeCheck": true,
+        "watchAssets": true
+    },
+    "sourceRoot": "src"
+}
