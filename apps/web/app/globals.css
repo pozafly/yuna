@@ -3,24 +3,40 @@
 @tailwind utilities;
 
 :root {
-  --background: #FDFBF7; /* 따뜻한 오프화이트 바탕 */
-  --foreground: #2A2A2A; /* 부드러운 먹색 텍스트 */
-  
-  --primary: #FFB0B0; /* 부드러운 산호색(Coral) 포인트 */
-  --coral-accent: #FF8F8F;
-  --peach-accent: #FFDAB9;
-  
-  --card-bg: #FFFFFF;
+  --soft-dawn: #F1F1D2;
+  /* Main Background (Cream/Beige) */
+  --petal-bloom: #DDA9F3;
+  /* Secondary Background (Lavender) */
+  --inkroot: #000000;
+  /* Primary Text, Logos, Outlines */
+  --pure-light: #FFFFFF;
+  /* Alternate Text, Icons */
+  --fresh-stem: #339833;
+  /* Accent (Green Stickers/Stars) */
+  --blush-berry: #FF6666;
+  /* Accent (Red/Coral Hearts) */
+  --sky-whisper: #B6D3FD;
+  /* Accent (Blue Blobs) */
+  --amber-spark: #FD7700;
+  /* Accent (Orange Elements) */
+  --sunbeam-pop: #F9F946;
+  /* Accent (Yellow Stars/Highlights) */
 
-  --font-playfair: 'Playfair Display', serif;
-  --font-inter: 'Inter', sans-serif;
-  --font-caveat: 'Caveat', cursive;
+  --background: var(--soft-dawn);
+  --foreground: var(--inkroot);
+  --primary: var(--blush-berry);
+  --card-bg: var(--pure-light);
+
+  --font-heading: 'Editorial New', 'Playfair Display', serif;
+  /* Or similar high-contrast serif */
+  --font-sans: 'Outfit', 'Inter', sans-serif;
+  --font-handwriting: 'Caveat', cursive;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: var(--font-inter);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -29,31 +45,31 @@ body {
  * Noah & June 디자인 스타일 유틸리티
  */
 @layer components {
-  /* 둥근 모서리와 부드러운 그림자를 가진 기본 카드 */
+
+  /* 둥근 모서리와 플랫한 느낌을 가진 기본 카드 (그림자 최소화) */
   .yuna-card {
-    @apply bg-card rounded-4xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden;
-  }
-  
-  /* 유리 질감 (Glassmorphism) 네비게이션용 */
-  .yuna-glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
+    @apply bg-card rounded-4xl border-[1.5px] border-inkroot/10 overflow-hidden;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    /* 아주 미세한 그림자만 남김 */
   }
 
-  /* 부드러운 그림자를 가진 버튼 */
+  /* 유리 질감 (Glassmorphism) 네비게이션용 */
+  .yuna-glass {
+    @apply bg-white/70 backdrop-blur-lg border border-white/40;
+  }
+
+  /* 강렬하고 둥근 알약 형태의 플랫 버튼 */
   .yuna-button-primary {
-    @apply bg-primary text-white rounded-full px-6 py-3 font-medium 
-           shadow-[0_4px_14px_0_rgba(255,176,176,0.5)] 
-           hover:shadow-[0_6px_20px_rgba(255,176,176,0.6)] 
-           hover:-translate-y-0.5 transition-all active:scale-95;
+    @apply bg-primary text-white rounded-full px-6 py-3 font-semibold tracking-wide border-2 border-transparent hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(255, 102, 102, 0.25)] active:scale-95 transition-all duration-200;
   }
 }
 
 /* 제목 폰트 전용 클래스 */
 .font-heading {
-  font-family: var(--font-playfair);
+  font-family: var(--font-heading);
 }
 
 /* 손글씨 느낌 폰트 (스티커, 짧은 코멘트에 사용) */
 .font-handwriting {
-  font-family: var(--font-caveat);
+  font-family: var(--font-handwriting);
 }

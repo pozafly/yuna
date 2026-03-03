@@ -1,23 +1,23 @@
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display, Caveat } from 'next/font/google';
+import { Outfit, Playfair_Display, Caveat } from 'next/font/google';
 import NavDock from '@/components/nav-dock';
 import './globals.css';
 
-const inter = Inter({
+const outfit = Outfit({
     subsets: ['latin'],
-    variable: '--font-inter',
+    variable: '--font-sans',
     display: 'swap',
 });
 
 const playfair = Playfair_Display({
     subsets: ['latin'],
-    variable: '--font-playfair',
+    variable: '--font-heading',
     display: 'swap',
 });
 
 const caveat = Caveat({
     subsets: ['latin'],
-    variable: '--font-caveat',
+    variable: '--font-handwriting',
     display: 'swap',
 });
 
@@ -32,7 +32,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="ko" className={`${inter.variable} ${playfair.variable} ${caveat.variable}`}>
+        <html lang="ko" className={`${outfit.variable} ${playfair.variable} ${caveat.variable}`}>
             <body className="bg-background min-h-screen text-foreground font-sans antialiased">
                 <main className="max-w-md mx-auto relative min-h-screen bg-white shadow-xl overflow-hidden pb-24">
                     {children}
