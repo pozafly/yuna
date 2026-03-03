@@ -59,7 +59,7 @@ export default function PostCard({ post }: PostCardProps) {
             alt={`${post.authorName}의 게시물 이미지`}
             fill
             className="object-cover transition-transform duration-300 hover:scale-[1.02]"
-            sizes="(max-width: 448px) 100vw, 448px"
+            sizes="(max-width: 630px) 100vw, 630px"
           />
           {/* 여러 장 표시 배지 */}
           {post.mediaUrls.length > 1 && (

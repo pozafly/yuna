@@ -32,8 +32,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        {/* 최대 너비를 모바일 기준으로 제한하고 중앙 정렬 */}
-        <div className="mx-auto max-w-md min-h-screen relative">
+        <div className="min-h-screen relative">
           {children}
         </div>
       </body>

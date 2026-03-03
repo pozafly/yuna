@@ -26,8 +26,8 @@ export default function AuthLayout({
         </p>
       </div>
 
-      {/* 인증 컨텐츠 카드 */}
-      <div className="w-full bg-pure-light rounded-4xl shadow-lg p-8">
+      {/* 인증 컨텐츠 카드 — Root에서 제거된 max-w-md를 여기에 적용 */}
+      <div className="w-full max-w-md bg-pure-light rounded-4xl shadow-lg p-8">
         {children}
       </div>
 
