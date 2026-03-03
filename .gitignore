@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+.next/
+.turbo/
+
+# env
+.env
+.env.local
+apps/api/.env
+apps/web/.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# test
+coverage/
+
+# misc
+*.log

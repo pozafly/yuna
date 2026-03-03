@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Fonts 임포트: Lora(세리프), Inter(산세리프), Caveat(손글씨) */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&family=Caveat:wght@400;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* 디자인 시스템 CSS 변수 */
+    --color-petal-bloom: #dda9f3;
+    --color-soft-dawn: #f1f1d2;
+    --color-inkroot: #000000;
+    --color-pure-light: #ffffff;
+    --color-fresh-stem: #339833;
+    --color-blush-berry: #ff6666;
+    --color-sky-whisper: #b6d3fd;
+    --color-amber-spark: #fd7700;
+    --color-sunbeam-pop: #f9f946;
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  html,
+  body {
+    max-width: 100vw;
+    /* 모바일 우선: 스크롤 중 가로 넘침 방지 */
+    overflow-x: hidden;
+    /* 기본 배경: Soft Dawn */
+    background-color: var(--color-soft-dawn);
+    color: var(--color-inkroot);
+    /* 기본 본문 폰트 */
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 헤딩에는 세리프 폰트 적용 */
+  h1,
+  h2,
+  h3 {
+    font-family: 'Lora', Georgia, serif;
+  }
+
+  /* 링크 기본 스타일 초기화 */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* 이미지 기본 블록 처리 */
+  img {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* 입력 요소 outline 초기화 */
+  input,
+  textarea,
+  button {
+    outline: none;
+  }
+}
+
+@layer components {
+  /* 공통 카드 스타일: Pure Light 배경 + 큰 둥근 모서리 */
+  .card {
+    @apply bg-pure-light rounded-4xl shadow-sm;
+  }
+
+  /* 알약 버튼 형태 */
+  .btn-pill {
+    @apply rounded-full px-6 py-3 font-semibold transition-all duration-200;
+    @apply active:scale-95;
+  }
+
+  /* 히어로 섹션: Petal Bloom 배경 */
+  .hero-section {
+    @apply bg-petal-bloom;
+  }
+
+  /* 텍스트 읽기 영역: Soft Dawn 배경 */
+  .content-section {
+    @apply bg-soft-dawn;
+  }
+
+  /* 강조 섹션: 검정 배경 */
+  .accent-section {
+    @apply bg-inkroot text-pure-light;
+  }
+
+  /* 네비게이션 독: 유리 질감 */
+  .glass-nav {
+    @apply backdrop-blur-nav bg-white/70 border border-white/40;
+  }
+
+  /* 손글씨 스티커 텍스트 */
+  .sticker-text {
+    @apply font-handwrite;
+  }
+
+  /* 페이지 전환 애니메이션 */
+  .page-enter {
+    @apply animate-fade-in;
+  }
+
+  /* 스크롤바 숨김 (모바일 피드용) */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  /* 안전한 하단 패딩 (iPhone 홈 인디케이터 대응) */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
+  /* 안전한 상단 패딩 (노치/Dynamic Island 대응) */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0rem);
+  }
+}

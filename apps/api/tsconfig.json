@@ -1,0 +1,13 @@
+{
+  "extends": "@yuna/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "strictPropertyInitialization": false,
+    "paths": {
+      "@yuna/shared-types": ["../../packages/shared-types/src"]
+    }
+  },
+  "include": ["src/**/*", "../../packages/shared-types/src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+}
