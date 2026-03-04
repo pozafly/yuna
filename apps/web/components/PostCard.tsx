@@ -6,6 +6,7 @@
  * 디자인 가이드:
  * - Pure Light 배경 + 큰 둥근 모서리 (4xl)
  * - 이미지가 있을 경우 상단에 이미지 프리뷰 표시
+ * - 이미지가 없으면 파스텔 그라디언트 + Doodle placeholder
  * - 작성자, 날짜, 공개 범위, 댓글 수 표시
  * - 호버 시 부드러운 스케일 애니메이션
  */
@@ -14,6 +15,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { PostResponseDto } from '@yuna/shared-types';
 import { Visibility } from '@yuna/shared-types';
+import Doodle from './Doodle';
 
 interface PostCardProps {
   post: PostResponseDto;
@@ -41,9 +43,21 @@ function formatRelativeTime(dateStr: string): string {
   });
 }
 
+/** 게시물 인덱스 기반 placeholder 스타일 (다양성) */
+const placeholderStyles = [
+  { gradient: 'from-petal-bloom/40 to-soft-dawn/60', doodle: 'heart' as const, color: '#9B4CC4' },
+  { gradient: 'from-sky-whisper/50 to-petal-bloom/30', doodle: 'star' as const, color: '#5BA4D9' },
+  { gradient: 'from-soft-dawn/60 to-sunbeam-pop/30', doodle: 'sparkle' as const, color: '#8B7A00' },
+  { gradient: 'from-blush-berry/20 to-petal-bloom/40', doodle: 'flower' as const, color: '#C44C8B' },
+];
+
 export default function PostCard({ post }: PostCardProps) {
   const hasImages = post.mediaUrls.length > 0;
   const isPrivate = post.visibility === Visibility.PRIVATE;
+
+  // placeholder 스타일 결정 (id 해시 기반)
+  const styleIdx = post.id.charCodeAt(0) % placeholderStyles.length;
+  const placeholder = placeholderStyles[styleIdx];
 
   return (
     <Link
@@ -67,6 +81,15 @@ export default function PostCard({ post }: PostCardProps) {
               +{post.mediaUrls.length - 1}
             </div>
           )}
+        </div>
+      )}
+
+      {/* 이미지 없을 때: 그라디언트 placeholder */}
+      {!hasImages && (
+        <div
+          className={`relative h-40 bg-gradient-to-br ${placeholder.gradient} flex items-center justify-center`}
+        >
+          <Doodle type={placeholder.doodle} size={48} color={placeholder.color} className="opacity-30" />
         </div>
       )}
 

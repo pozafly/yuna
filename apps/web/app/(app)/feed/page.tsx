@@ -8,6 +8,10 @@ import Button from '../../../components/Button';
 import SectionLabel from '../../../components/SectionLabel';
 import Sticker from '../../../components/Sticker';
 import BrandMark from '../../../components/BrandMark';
+import Noah from '../../../components/Noah';
+import Doodle from '../../../components/Doodle';
+import BabyProfileCard from '../../../components/BabyProfileCard';
+import PageHero from '../../../components/PageHero';
 import type { PostResponseDto } from '@yuna/shared-types';
 
 export default function FeedPage() {
@@ -17,12 +21,14 @@ export default function FeedPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // data attribute에서 babyId와 role 가져오기
+  // data attribute에서 babyId, role, name, birthDate 가져오기
   const getBabyInfo = useCallback(() => {
     const main = document.querySelector('main');
     return {
       babyId: main?.dataset.babyId ?? '',
       role: main?.dataset.babyRole ?? '',
+      babyName: main?.dataset.babyName ?? '',
+      babyBirthDate: main?.dataset.babyBirthDate ?? '',
     };
   }, []);
 
@@ -57,11 +63,27 @@ export default function FeedPage() {
     loadPosts(1, true);
   }, [loadPosts]);
 
-  const { role } = getBabyInfo();
+  const { role, babyName, babyBirthDate } = getBabyInfo();
   const isOwner = role === 'OWNER';
 
   return (
-    <div className="space-y-4 animate-fade-in">
+    <div className="space-y-3 animate-fade-in">
+      {/* Baby 프로필 카드 */}
+      {babyName && (
+        <BabyProfileCard
+          name={babyName}
+          birthDate={babyBirthDate || null}
+          role={role}
+        />
+      )}
+
+      {/* 페이지 히어로 */}
+      <PageHero
+        tagline="소중한 순간을 함께"
+        subtitle="우리 아이의 매일매일을 기록해요"
+        variant="petal"
+      />
+
       <SectionLabel>피드</SectionLabel>
 
       {/* OWNER만 글 작성 가능 */}
@@ -79,13 +101,29 @@ export default function FeedPage() {
 
       {/* 게시물 목록 */}
       {posts.length === 0 && !loading ? (
-        <div className="text-center py-16 text-inkroot/40">
-          <div className="mb-3">
+        <div className="text-center py-16 text-inkroot/40 space-y-4">
+          <Noah size={140} className="mx-auto animate-bounce-soft" />
+          <div className="flex justify-center gap-2">
             <Sticker text="cute" popIn />
+            <Sticker text="noah" popIn />
           </div>
-          <p className="font-handwrite text-lg">아직 게시물이 없습니다.</p>
+          <div className="flex justify-center gap-3">
+            <Doodle type="sparkle" size={22} color="var(--color-petal-bloom)" />
+            <Doodle type="heart" size={18} color="var(--color-blush-berry)" />
+            <Doodle type="star" size={20} color="var(--color-sunbeam-pop)" />
+          </div>
+          <p className="display-tagline text-inkroot/60">아직 게시물이 없어요</p>
           {isOwner && (
-            <p className="text-xs mt-1">첫 번째 사진을 올려보세요!</p>
+            <div className="space-y-2">
+              <p className="text-sm text-inkroot/50">첫 번째 사진을 올려보세요!</p>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => router.push('/feed/new')}
+              >
+                + 첫 게시물 작성
+              </Button>
+            </div>
           )}
         </div>
       ) : (

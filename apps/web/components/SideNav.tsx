@@ -34,7 +34,7 @@ export default function SideNav({
   const pathname = usePathname();
 
   return (
-    <nav className="hidden lg:flex fixed left-0 top-0 h-screen w-[244px] z-20 flex-col bg-pure-light border-r border-inkroot/5">
+    <nav className="hidden lg:flex sticky top-0 h-screen w-[244px] shrink-0 flex-col bg-pure-light border-r border-inkroot/5">
       {/* 상단 로고: 릴리 플라워 브랜드마크 + 손글씨 */}
       <div className="px-6 pt-8 pb-6 flex items-center gap-3">
         <BrandMark size={28} color="#339833" />

@@ -14,6 +14,9 @@ import {
   Invitation,
   BabyMembership,
   Baby,
+  Post,
+  Letter,
+  Comment,
 } from '../entities';
 import {
   InvitationStatus,
@@ -21,6 +24,8 @@ import {
   Role,
   MembershipStatus,
   BabyStatus,
+  Visibility,
+  TargetType,
 } from '@yuna/shared-types';
 
 @Injectable()
@@ -33,6 +38,10 @@ export class AuthService {
     private readonly membershipRepo: Repository<BabyMembership>,
     @InjectRepository(Baby)
     private readonly babyRepo: Repository<Baby>,
+    @InjectRepository(Post) private readonly postRepo: Repository<Post>,
+    @InjectRepository(Letter) private readonly letterRepo: Repository<Letter>,
+    @InjectRepository(Comment)
+    private readonly commentRepo: Repository<Comment>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
@@ -208,6 +217,7 @@ export class AuthService {
           id: m.baby.id,
           name: m.baby.name,
           role: m.role,
+          birthDate: m.baby.birthDate ?? null,
         })),
     };
   }
@@ -226,13 +236,15 @@ export class AuthService {
       await this.userRepo.save(user);
     }
 
-    // Baby가 없으면 하나 생성
+    // Baby가 없으면 하나 생성, 있으면 기존 baby를 조회
     let membership = await this.membershipRepo.findOne({
       where: { userId: user.id },
     });
+    let baby: Baby;
 
     if (!membership) {
-      const baby = this.babyRepo.create({
+      // 신규 Baby 생성
+      baby = this.babyRepo.create({
         name: '우리 아기',
         gender: null,
         birthDate: '2025-01-01',
@@ -247,9 +259,170 @@ export class AuthService {
         status: MembershipStatus.ACTIVE,
       });
       await this.membershipRepo.save(membership);
+    } else {
+      // 기존 Baby 조회 (membership이 존재하므로 반드시 존재해야 함)
+      const foundBaby = await this.babyRepo.findOne({
+        where: { id: membership.babyId },
+      });
+      if (!foundBaby) {
+        // 데이터 정합성 오류 — 정상적인 상황에서는 발생하지 않음
+        return this.issueTokens(user);
+      }
+      baby = foundBaby;
     }
 
+    // 시드 데이터 생성 (중복 방지 포함)
+    await this.seedDevData(user.id, baby.id);
+
     return this.issueTokens(user);
+  }
+
+  /** 개발용 시드 데이터 생성 (Post 5개, Letter 3개, Comment 6개) */
+  private async seedDevData(userId: string, babyId: string): Promise<void> {
+    // 게시물이 5개 이상이면 시드 데이터가 이미 충분하므로 건너뜀
+    const existingCount = await this.postRepo.count({ where: { babyId } });
+    if (existingCount >= 5) {
+      return;
+    }
+
+    // ──────────────────────────────────────────────
+    // 게시물 5개 생성 (INVITED 4개 + PRIVATE 1개)
+    // ──────────────────────────────────────────────
+    const postDataList = [
+      {
+        content:
+          '오늘 처음으로 혼자 앉았어요! 작은 등이 꼿꼿하게 서는 순간, 눈물이 왈칵 쏟아졌습니다. 이 소중한 순간을 절대 잊지 못할 것 같아요.',
+        visibility: Visibility.INVITED,
+        takenAt: new Date('2025-03-15T10:30:00'),
+      },
+      {
+        content:
+          '이유식을 처음 먹었는데 온 얼굴에 당근 퓨레를 묻히고는 방긋 웃더라고요. 세상에서 제일 귀여운 장면이었어요.',
+        visibility: Visibility.INVITED,
+        takenAt: new Date('2025-04-20T12:00:00'),
+      },
+      {
+        content:
+          '오늘 낮잠 자는 모습이 너무 사랑스러워서 한 시간 동안 그냥 바라봤어요. 작은 손이 볼 옆에 가지런히 놓여 있는 모습이 천사 같았습니다.',
+        visibility: Visibility.INVITED,
+        takenAt: new Date('2025-05-10T14:45:00'),
+      },
+      {
+        content:
+          '드디어 첫 걸음마를 뗐어요! 두 발자국을 내딛고는 엉덩방아를 찧었는데, 울지 않고 씩씩하게 다시 일어나려고 하더라고요.',
+        visibility: Visibility.INVITED,
+        takenAt: new Date('2025-07-01T09:15:00'),
+      },
+      {
+        // PRIVATE 게시물 — OWNER만 볼 수 있는 특별한 기록
+        content:
+          '오늘은 아이에게 비밀로 간직하고 싶은 이야기예요. 처음 뱃속에서 움직임을 느꼈던 그 날의 감동을 다시 꺼내 봅니다.',
+        visibility: Visibility.PRIVATE,
+        takenAt: new Date('2025-02-14T08:00:00'),
+      },
+    ];
+
+    const savedPosts: Post[] = [];
+    for (const data of postDataList) {
+      const post = this.postRepo.create({
+        babyId,
+        authorId: userId,
+        content: data.content,
+        visibility: data.visibility,
+        takenAt: data.takenAt,
+      });
+      const saved = await this.postRepo.save(post);
+      savedPosts.push(saved);
+    }
+
+    // ──────────────────────────────────────────────
+    // 편지 3개 생성 (INVITED 2개 + PRIVATE 1개)
+    // ──────────────────────────────────────────────
+    const letterDataList = [
+      {
+        title: '네가 열 살이 되는 날에',
+        content:
+          '이 편지를 쓰는 지금, 너는 아직 기저귀를 차고 옹알이를 하고 있단다. 10년 후 이 편지를 읽게 될 너는 어떤 아이로 자랐을까? 엄마는 네가 건강하고 웃음 가득한 사람이 되길 바란다.',
+        visibility: Visibility.INVITED,
+      },
+      {
+        title: '처음 만난 그날의 이야기',
+        content:
+          '세상에 나온 지 단 몇 시간 만에 너는 내 손가락을 꼭 쥐었어. 그 작고 따뜻한 손의 감촉이 아직도 생생하다. 우리 가족 모두가 얼마나 기다렸는지 알아주었으면 해.',
+        visibility: Visibility.INVITED,
+      },
+      {
+        // PRIVATE 편지 — OWNER만 볼 수 있는 깊은 이야기
+        title: '엄마의 솔직한 마음',
+        content:
+          '너한테 다 말하지 못한 이야기들이 있어. 처음 엄마가 되는 것이 얼마나 무섭고 설레는 일이었는지. 이 편지는 네가 어른이 되었을 때 꼭 읽어줬으면 해.',
+        visibility: Visibility.PRIVATE,
+      },
+    ];
+
+    const savedLetters: Letter[] = [];
+    for (const data of letterDataList) {
+      const letter = this.letterRepo.create({
+        babyId,
+        authorId: userId,
+        title: data.title,
+        content: data.content,
+        visibility: data.visibility,
+      });
+      const saved = await this.letterRepo.save(letter);
+      savedLetters.push(saved);
+    }
+
+    // ──────────────────────────────────────────────
+    // 댓글 6개 생성 — 게시물 4개 + 편지 1개에 분산
+    // ──────────────────────────────────────────────
+    const commentDataList = [
+      // 게시물 0번 (처음 앉은 날)에 댓글 2개
+      {
+        targetType: TargetType.POST,
+        targetId: savedPosts[0].id,
+        content: '정말 대단해요! 이 순간 함께하지 못해서 아쉽지만 사진으로나마 보니 눈물이 날 것 같아요. 💕',
+      },
+      {
+        targetType: TargetType.POST,
+        targetId: savedPosts[0].id,
+        content: '우리 아가 이제 혼자 앉았구나! 할머니도 빨리 보고 싶어요.',
+      },
+      // 게시물 1번 (이유식)에 댓글 1개
+      {
+        targetType: TargetType.POST,
+        targetId: savedPosts[1].id,
+        content: '표정이 너무 귀여웠겠다ㅎㅎ 처음 이유식 먹던 날의 그 표정은 평생 잊지 못하죠!',
+      },
+      // 게시물 2번 (낮잠)에 댓글 1개
+      {
+        targetType: TargetType.POST,
+        targetId: savedPosts[2].id,
+        content: '자는 모습이 천사네요. 이럴 때 영상도 꼭 찍어두세요, 나중에 보물이 돼요!',
+      },
+      // 게시물 3번 (첫 걸음마)에 댓글 1개
+      {
+        targetType: TargetType.POST,
+        targetId: savedPosts[3].id,
+        content: '드디어 걸음마를!! 진짜 감격스럽네요. 이제 더 빠르게 커가겠죠? 응원해요!',
+      },
+      // 편지 0번에 댓글 1개
+      {
+        targetType: TargetType.LETTER,
+        targetId: savedLetters[0].id,
+        content: '이 편지를 읽고 저도 모르게 눈물이 났어요. 아이가 나중에 이 편지를 읽으면 얼마나 감동받을까요.',
+      },
+    ];
+
+    for (const data of commentDataList) {
+      const comment = this.commentRepo.create({
+        targetType: data.targetType,
+        targetId: data.targetId,
+        authorId: userId,
+        content: data.content,
+      });
+      await this.commentRepo.save(comment);
+    }
   }
 
   /** Access + Refresh 토큰 발급 */

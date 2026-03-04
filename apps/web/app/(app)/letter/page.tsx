@@ -7,6 +7,9 @@ import Button from '../../../components/Button';
 import SectionLabel from '../../../components/SectionLabel';
 import Sticker from '../../../components/Sticker';
 import BrandMark from '../../../components/BrandMark';
+import June from '../../../components/June';
+import Doodle from '../../../components/Doodle';
+import PageHero from '../../../components/PageHero';
 import type { LetterResponseDto } from '@yuna/shared-types';
 
 export default function LetterListPage() {
@@ -41,6 +44,13 @@ export default function LetterListPage() {
 
   return (
     <div className="space-y-4 animate-fade-in">
+      {/* 페이지 히어로 */}
+      <PageHero
+        tagline="마음을 담은 편지"
+        subtitle="시간이 지나도 변하지 않는 마음을 남겨요"
+        variant="dawn"
+      />
+
       <SectionLabel>편지</SectionLabel>
       <div className="flex items-center justify-between">
         <Button
@@ -53,12 +63,26 @@ export default function LetterListPage() {
       </div>
 
       {letters.length === 0 ? (
-        <div className="text-center py-16 text-inkroot/40">
-          <div className="mb-3">
+        <div className="text-center py-16 text-inkroot/40 space-y-4">
+          <June size={140} className="mx-auto animate-bounce-soft" />
+          <div className="flex justify-center gap-2">
             <Sticker text="hi!" popIn />
+            <Sticker text="june" popIn />
           </div>
-          <p className="font-handwrite text-lg">아직 편지가 없습니다.</p>
-          <p className="text-xs mt-1">소중한 마음을 담아 편지를 써보세요.</p>
+          <div className="flex justify-center gap-3">
+            <Doodle type="flower" size={22} color="var(--color-fresh-stem)" />
+            <Doodle type="sparkle" size={18} color="var(--color-petal-bloom)" />
+            <Doodle type="heart" size={20} color="var(--color-blush-berry)" />
+          </div>
+          <p className="display-tagline text-inkroot/60">아직 편지가 없어요</p>
+          <p className="text-sm text-inkroot/50">소중한 마음을 담아 편지를 써보세요.</p>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => router.push('/letter/new')}
+          >
+            + 첫 편지 쓰기
+          </Button>
         </div>
       ) : (
         <div className="space-y-3">

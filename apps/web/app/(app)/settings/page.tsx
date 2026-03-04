@@ -7,6 +7,7 @@ import Button from '../../../components/Button';
 import Input from '../../../components/Input';
 import Modal from '../../../components/Modal';
 import SectionLabel from '../../../components/SectionLabel';
+import Noah from '../../../components/Noah';
 import type { CreateBabyDto, CreateInvitationDto } from '@yuna/shared-types';
 
 interface UserInfo {
@@ -120,9 +121,17 @@ export default function SettingsPage() {
         </div>
 
         {user.babies.length === 0 ? (
-          <p className="text-inkroot/40 text-sm">
-            등록된 Baby가 없습니다.
-          </p>
+          <div className="flex items-center gap-3 py-2">
+            <Noah size={80} className="opacity-60 shrink-0" />
+            <div>
+              <p className="text-inkroot/60 text-sm font-medium">
+                아직 등록된 Baby가 없어요
+              </p>
+              <p className="text-inkroot/40 text-xs mt-1">
+                위의 &quot;+ Baby 등록&quot; 버튼으로 시작해보세요!
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="space-y-2">
             {user.babies.map((baby) => (
