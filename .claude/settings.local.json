@@ -28,7 +28,10 @@
       "Skill(kanban-list)",
       "Bash(gh:*)",
       "Skill(kanban-update)",
-      "Bash(do gh:*)"
+      "Bash(do gh:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(claude mcp:*)"
     ]
   }
 }

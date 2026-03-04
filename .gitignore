@@ -24,5 +24,8 @@ Thumbs.db
 # test
 coverage/
 
+# screenshots (Playwright MCP)
+screenshots/
+
 # misc
 *.log
