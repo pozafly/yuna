@@ -35,6 +35,14 @@ pnpm workspaces 모노레포에서 `apps/web`(Next.js)과 `apps/api`(NestJS) 사
 3. `pnpm type-check`를 루트에서 실행하여 타입 에러가 없는지 검증한다.
 4. 다음 단계 에이전트(Backend/Frontend)에게 넘길 구체적 명세를 요약하여 반환한다.
 
+## 칸반보드 상태 업데이트
+
+이슈 번호가 주어진 작업의 경우, `/kanban-update` 스킬을 사용하여 칸반 상태를 업데이트한다.
+
+- **작업 시작 시**: `/kanban-update #이슈번호 progress --label agent:architecture`
+- **작업 완료 시**: `/kanban-update #이슈번호 done --label agent:architecture`
+- **실패 시**: In Progress 상태를 유지한다. 칸반 업데이트 실패가 본 작업을 블로킹하지 않는다 (best-effort).
+
 ## 참고 문서
 
 - `docs/TECH-A_repo-structure.md` — 디렉토리 구조

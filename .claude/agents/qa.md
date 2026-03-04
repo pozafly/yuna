@@ -46,6 +46,14 @@ maxTurns: 20
 3. 잠재적 보안 취약성을 분석하여 버그 리포트를 출력한다.
 4. `pnpm test`를 실행하고 결과를 증빙으로 첨부한다.
 
+## 칸반보드 상태 업데이트
+
+이슈 번호가 주어진 작업의 경우, `/kanban-update` 스킬을 사용하여 칸반 상태를 업데이트한다.
+
+- **작업 시작 시**: `/kanban-update #이슈번호 progress --label agent:qa`
+- **작업 완료 시**: `/kanban-update #이슈번호 done --label agent:qa`
+- **실패 시**: In Progress 상태를 유지한다. 칸반 업데이트 실패가 본 작업을 블로킹하지 않는다 (best-effort).
+
 ## 참고 문서
 
 - `docs/PRD-B_permission-matrix.md` — 권한 매트릭스

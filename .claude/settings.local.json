@@ -22,7 +22,9 @@
       "mcp__plugin_playwright_playwright__browser_wait_for",
       "Bash(gh repo:*)",
       "Bash(gh project:*)",
-      "Bash(gh auth:*)"
+      "Bash(gh auth:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh label:*)"
     ]
   }
 }
