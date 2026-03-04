@@ -19,6 +19,8 @@ interface BabyProfileCardProps {
   birthDate?: string | null;
   /** 역할: "OWNER" | "INVITED" */
   role?: string;
+  /** 카드 하단 태그라인 (예: "소중한 순간을 함께") */
+  tagline?: string;
 }
 
 /** birthDate → D+일수 계산 (태어난 날을 D+1로) */
@@ -34,6 +36,7 @@ export default function BabyProfileCard({
   name,
   birthDate,
   role = 'INVITED',
+  tagline,
 }: BabyProfileCardProps) {
   const daysOld = birthDate ? calcDaysOld(birthDate) : null;
   const isOwner = role === 'OWNER';
@@ -49,7 +52,7 @@ export default function BabyProfileCard({
       "
     >
       {/* ── 배경 장식 (sparkle 1개만) ── */}
-      <div className="absolute top-3 right-4 opacity-15 pointer-events-none" aria-hidden="true">
+      <div className="absolute top-3 right-4 opacity-30 pointer-events-none" aria-hidden="true">
         <Doodle type="sparkle" size={32} color="#9B4CC4" />
       </div>
 
@@ -100,9 +103,16 @@ export default function BabyProfileCard({
               : 'bg-sky-whisper text-inkroot',
           ].join(' ')}
         >
-          {isOwner ? 'OWNER' : 'INVITED'}
+          {isOwner ? '부모' : '가족'}
         </span>
       </div>
+
+      {/* ── tagline (있을 경우) ── */}
+      {tagline && (
+        <p className="relative z-10 mt-2 text-sm text-inkroot/60 font-sans">
+          {tagline}
+        </p>
+      )}
     </div>
   );
 }

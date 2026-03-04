@@ -1,27 +1,33 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../../../lib/api';
 import PostCard from '../../../components/PostCard';
 import Button from '../../../components/Button';
-import SectionLabel from '../../../components/SectionLabel';
 import Sticker from '../../../components/Sticker';
 import BrandMark from '../../../components/BrandMark';
 import Noah from '../../../components/Noah';
 import Doodle from '../../../components/Doodle';
 import BabyProfileCard from '../../../components/BabyProfileCard';
-import PageHero from '../../../components/PageHero';
+import ImageUploader from '../../../components/ImageUploader';
+import { Visibility } from '@yuna/shared-types';
 import type { PostResponseDto } from '@yuna/shared-types';
+import type { ImageUploaderRef } from '../../../components/ImageUploader';
 
 export default function FeedPage() {
-  const router = useRouter();
   const [posts, setPosts] = useState<PostResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  // data attribute에서 babyId, role, name, birthDate 가져오기
+  // 게시물 작성 모달 상태
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newContent, setNewContent] = useState('');
+  const [newVisibility, setNewVisibility] = useState<Visibility>(Visibility.INVITED);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const uploaderRef = useRef<ImageUploaderRef>(null);
+
   const getBabyInfo = useCallback(() => {
     const main = document.querySelector('main');
     return {
@@ -63,7 +69,109 @@ export default function FeedPage() {
     loadPosts(1, true);
   }, [loadPosts]);
 
-  const { role, babyName, babyBirthDate } = getBabyInfo();
+  // 무한 스크롤
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const loadingRef = useRef(false);
+  const pageRef = useRef(1);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loadingRef.current) {
+          const nextPage = pageRef.current + 1;
+          pageRef.current = nextPage;
+          setPage(nextPage);
+          loadingRef.current = true;
+          loadPosts(nextPage).finally(() => {
+            loadingRef.current = false;
+          });
+        }
+      },
+      { rootMargin: '200px' },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadPosts, hasMore]);
+
+  // 모달 열릴 때 배경 스크롤 방지
+  useEffect(() => {
+    if (showCreateModal) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showCreateModal]);
+
+  // ESC로 모달 닫기
+  useEffect(() => {
+    if (!showCreateModal) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeModal();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCreateModal]);
+
+  const openModal = () => {
+    setShowCreateModal(true);
+    setNewContent('');
+    setNewVisibility(Visibility.INVITED);
+    setCreateError('');
+  };
+
+  const closeModal = () => {
+    if (creating) return; // 작성 중에는 닫기 방지
+    setShowCreateModal(false);
+  };
+
+  // 게시물 작성 제출
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newContent.trim()) {
+      setCreateError('내용을 입력해 주세요.');
+      return;
+    }
+
+    const { babyId } = getBabyInfo();
+    if (!babyId) return;
+
+    setCreating(true);
+    setCreateError('');
+
+    try {
+      let mediaKeys: string[] = [];
+      if (uploaderRef.current?.hasFiles()) {
+        mediaKeys = await uploaderRef.current.uploadAll();
+      }
+
+      await api.post('/posts', {
+        babyId,
+        content: newContent.trim(),
+        visibility: newVisibility,
+        ...(mediaKeys.length > 0 && { mediaKeys }),
+      });
+
+      setShowCreateModal(false);
+      // 피드 새로고침 (첫 페이지부터)
+      pageRef.current = 1;
+      setPage(1);
+      loadPosts(1, true);
+    } catch {
+      setCreateError('게시물 작성에 실패했습니다.');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const { role, babyName, babyBirthDate, babyId } = getBabyInfo();
   const isOwner = role === 'OWNER';
 
   return (
@@ -74,29 +182,8 @@ export default function FeedPage() {
           name={babyName}
           birthDate={babyBirthDate || null}
           role={role}
+          tagline="소중한 순간을 함께"
         />
-      )}
-
-      {/* 페이지 히어로 */}
-      <PageHero
-        tagline="소중한 순간을 함께"
-        subtitle="우리 아이의 매일매일을 기록해요"
-        variant="petal"
-      />
-
-      <SectionLabel>피드</SectionLabel>
-
-      {/* OWNER만 글 작성 가능 */}
-      {isOwner && (
-        <div className="flex justify-end">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => router.push('/feed/new')}
-          >
-            + 새 게시물
-          </Button>
-        </div>
       )}
 
       {/* 게시물 목록 */}
@@ -116,11 +203,7 @@ export default function FeedPage() {
           {isOwner && (
             <div className="space-y-2">
               <p className="text-sm text-inkroot/50">첫 번째 사진을 올려보세요!</p>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => router.push('/feed/new')}
-              >
+              <Button variant="primary" size="sm" onClick={openModal}>
                 + 첫 게시물 작성
               </Button>
             </div>
@@ -132,27 +215,126 @@ export default function FeedPage() {
         ))
       )}
 
-      {/* 더 보기 */}
-      {hasMore && !loading && (
-        <div className="text-center pt-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              const next = page + 1;
-              setPage(next);
-              loadPosts(next);
-            }}
-          >
-            더 보기
-          </Button>
-        </div>
-      )}
+      {/* 무한 스크롤 센티넬 */}
+      {hasMore && <div ref={sentinelRef} className="h-1" />}
 
       {loading && (
         <div className="text-center py-8">
           <div className="animate-bounce-soft">
             <BrandMark size={32} color="#DDA9F3" />
+          </div>
+        </div>
+      )}
+
+      {!hasMore && posts.length > 0 && (
+        <p className="text-center text-xs text-inkroot/30 py-4">
+          모든 게시물을 불러왔어요
+        </p>
+      )}
+
+      {/* FAB: 새 게시물 작성 */}
+      {isOwner && (
+        <button
+          onClick={openModal}
+          className="fixed bottom-24 right-5 md:bottom-8 md:right-8
+            w-14 h-14 rounded-full bg-blush-berry text-pure-light
+            shadow-lg hover:shadow-xl hover:scale-105
+            active:scale-95 transition-all duration-200
+            flex items-center justify-center z-40"
+          aria-label="새 게시물 작성"
+        >
+          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      )}
+
+      {/* 전체화면 게시물 작성 모달 */}
+      {showCreateModal && (
+        <div
+          className="fixed inset-0 z-50 bg-pure-light animate-fade-in flex flex-col"
+          role="dialog"
+          aria-modal="true"
+          aria-label="새 게시물 작성"
+        >
+          {/* 헤더 */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-inkroot/5">
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={creating}
+              className="text-sm text-inkroot/60 hover:text-inkroot transition disabled:opacity-50"
+            >
+              취소
+            </button>
+            <h2 className="font-display text-lg font-bold text-inkroot">
+              새 게시물
+            </h2>
+            <button
+              type="button"
+              onClick={handleCreate}
+              disabled={creating || !newContent.trim()}
+              className="text-sm font-semibold text-blush-berry hover:text-blush-berry/80
+                transition disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {creating ? '게시 중...' : '게시'}
+            </button>
+          </div>
+
+          {/* 바디 (스크롤 가능) */}
+          <div className="flex-1 overflow-y-auto">
+            <form onSubmit={handleCreate} className="p-5 space-y-5">
+              {/* 사진 첨부 */}
+              {babyId && (
+                <ImageUploader ref={uploaderRef} babyId={babyId} maxFiles={10} />
+              )}
+
+              {/* 본문 */}
+              <textarea
+                value={newContent}
+                onChange={(e) => setNewContent(e.target.value)}
+                placeholder="아이의 소중한 순간을 기록해 보세요..."
+                rows={8}
+                autoFocus
+                className="w-full px-5 py-4 rounded-3xl bg-soft-dawn text-inkroot border-2 border-transparent
+                  placeholder:text-inkroot/40 transition-all duration-200
+                  focus:outline-none focus:border-fresh-stem/50 focus:ring-2 focus:ring-fresh-stem/10
+                  focus:bg-pure-light resize-none"
+              />
+
+              {/* 공개 범위 */}
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-semibold text-inkroot">공개 범위</span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewVisibility(Visibility.INVITED)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      newVisibility === Visibility.INVITED
+                        ? 'bg-fresh-stem text-pure-light'
+                        : 'bg-soft-dawn text-inkroot/60'
+                    }`}
+                  >
+                    가족 전체
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewVisibility(Visibility.PRIVATE)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                      newVisibility === Visibility.PRIVATE
+                        ? 'bg-fresh-stem text-pure-light'
+                        : 'bg-soft-dawn text-inkroot/60'
+                    }`}
+                  >
+                    나만 보기
+                  </button>
+                </div>
+              </div>
+
+              {createError && (
+                <p className="text-blush-berry text-sm px-1">{createError}</p>
+              )}
+            </form>
           </div>
         </div>
       )}

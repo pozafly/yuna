@@ -71,7 +71,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
       {/* 전체 앱 컨테이너 — 데스크탑에서 사이드바+콘텐츠를 중앙 정렬 */}
-      <div className="bg-pure-light lg:max-w-[900px] lg:mx-auto lg:flex lg:min-h-screen lg:shadow-[0_0_60px_rgba(0,0,0,0.03)]">
+      <div className="bg-soft-dawn lg:max-w-[900px] lg:mx-auto lg:flex lg:min-h-screen lg:shadow-[0_0_60px_rgba(0,0,0,0.03)]">
         {/* 데스크탑 사이드 네비게이션 (lg 이상에서만 표시) */}
         <SideNav
           babies={user.babies}

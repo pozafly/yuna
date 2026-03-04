@@ -8,3 +8,4 @@ export { PostMedia } from './post-media.entity';
 export { Letter } from './letter.entity';
 export { Comment } from './comment.entity';
 export { Notification } from './notification.entity';
+export { Like } from './like.entity';

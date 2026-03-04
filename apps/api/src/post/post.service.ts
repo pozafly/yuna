@@ -5,13 +5,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post, PostMedia, BabyMembership } from '../entities';
+import { Post, PostMedia, BabyMembership, Like } from '../entities';
 import {
   Role,
   MembershipStatus,
   Visibility,
 } from '@yuna/shared-types';
 import type { CreatePostDto, UpdatePostDto } from '@yuna/shared-types';
+import { StorageService } from '../storage/storage.service';
 
 @Injectable()
 export class PostService {
@@ -22,6 +23,9 @@ export class PostService {
     private readonly mediaRepo: Repository<PostMedia>,
     @InjectRepository(BabyMembership)
     private readonly membershipRepo: Repository<BabyMembership>,
+    @InjectRepository(Like)
+    private readonly likeRepo: Repository<Like>,
+    private readonly storageService: StorageService,
   ) {}
 
   /** 게시물 작성 (OWNER만) */
@@ -93,7 +97,7 @@ export class PostService {
       .getManyAndCount();
 
     return {
-      data: posts.map((p) => this.toResponse(p)),
+      data: await Promise.all(posts.map((p) => this.toResponse(p, userId))),
       pagination: {
         page,
         limit,
@@ -123,7 +127,7 @@ export class PostService {
       throw new ForbiddenException('접근 권한이 없습니다');
     }
 
-    return this.toResponse(post);
+    return await this.toResponse(post, userId);
   }
 
   /** 게시물 수정 (작성자만) */
@@ -155,7 +159,18 @@ export class PostService {
     return { message: '게시물이 삭제되었습니다' };
   }
 
-  private toResponse(post: Post) {
+  private async toResponse(post: Post, userId: string) {
+    const sortedMedia = (post.media ?? []).sort((a, b) => a.order - b.order);
+    const [mediaUrls, likeCount, myLike] = await Promise.all([
+      Promise.all(
+        sortedMedia.map((m) =>
+          this.storageService.generateGetUrl(m.storageKey),
+        ),
+      ),
+      this.likeRepo.count({ where: { postId: post.id } }),
+      this.likeRepo.findOne({ where: { postId: post.id, userId } }),
+    ]);
+
     return {
       id: post.id,
       babyId: post.babyId,
@@ -164,10 +179,10 @@ export class PostService {
       content: post.content,
       visibility: post.visibility,
       takenAt: post.takenAt?.toISOString() ?? null,
-      mediaUrls: (post.media ?? [])
-        .sort((a, b) => a.order - b.order)
-        .map((m) => m.storageKey),
+      mediaUrls,
       commentCount: 0, // TODO: 실제 카운트 쿼리
+      likeCount,
+      isLikedByMe: !!myLike,
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
     };

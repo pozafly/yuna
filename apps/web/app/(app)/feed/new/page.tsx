@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { Visibility } from '@yuna/shared-types';
 import Button from '../../../../components/Button';
+import ImageUploader from '../../../../components/ImageUploader';
+import type { ImageUploaderRef } from '../../../../components/ImageUploader';
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -12,6 +14,7 @@ export default function NewPostPage() {
   const [visibility, setVisibility] = useState<Visibility>(Visibility.INVITED);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const uploaderRef = useRef<ImageUploaderRef>(null);
 
   const getBabyId = useCallback(() => {
     return document.querySelector('main')?.dataset.babyId ?? '';
@@ -31,10 +34,18 @@ export default function NewPostPage() {
     setError('');
 
     try {
+      // 1. 이미지가 있으면 먼저 업로드
+      let mediaKeys: string[] = [];
+      if (uploaderRef.current?.hasFiles()) {
+        mediaKeys = await uploaderRef.current.uploadAll();
+      }
+
+      // 2. 게시물 생성
       await api.post('/posts', {
         babyId,
         content: content.trim(),
         visibility,
+        ...(mediaKeys.length > 0 && { mediaKeys }),
       });
       router.push('/feed');
     } catch {
@@ -44,6 +55,8 @@ export default function NewPostPage() {
     }
   }
 
+  const babyId = getBabyId();
+
   return (
     <div className="animate-fade-in">
       <h2 className="font-display text-xl font-bold text-inkroot mb-6">
@@ -51,6 +64,11 @@ export default function NewPostPage() {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        {/* 사진 첨부 */}
+        {babyId && (
+          <ImageUploader ref={uploaderRef} babyId={babyId} maxFiles={10} />
+        )}
+
         {/* 본문 */}
         <textarea
           value={content}

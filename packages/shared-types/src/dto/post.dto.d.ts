@@ -21,6 +21,8 @@ export interface PostResponseDto {
     takenAt: string | null;
     mediaUrls: string[];
     commentCount: number;
+    likeCount: number;
+    isLikedByMe: boolean;
     createdAt: string;
     updatedAt: string;
 }

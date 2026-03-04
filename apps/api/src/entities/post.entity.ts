@@ -13,6 +13,7 @@ import type { Baby } from './baby.entity';
 import type { User } from './user.entity';
 import type { PostMedia } from './post-media.entity';
 import type { Comment } from './comment.entity';
+import type { Like } from './like.entity';
 
 @Entity('posts')
 export class Post {
@@ -54,4 +55,7 @@ export class Post {
 
   @OneToMany('Comment', 'post')
   comments: Comment[];
+
+  @OneToMany('Like', 'post')
+  likes: Like[];
 }

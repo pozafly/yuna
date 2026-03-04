@@ -72,13 +72,13 @@ export default function PageHero({
     >
       {/* ── 배경 낙서 장식 (sparkle + flower만 유지) ── */}
       <div
-        className="absolute top-3 right-4 opacity-15 pointer-events-none"
+        className="absolute top-3 right-4 opacity-35 pointer-events-none"
         aria-hidden="true"
       >
         <Doodle type="sparkle" size={40} color={doodleColor} />
       </div>
       <div
-        className="absolute bottom-3 right-8 opacity-10 pointer-events-none"
+        className="absolute bottom-3 right-8 opacity-25 pointer-events-none"
         aria-hidden="true"
       >
         <Doodle type="flower" size={32} color={doodleColor} />

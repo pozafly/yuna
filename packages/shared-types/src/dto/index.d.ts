@@ -5,4 +5,5 @@ export type { CreateLetterDto, UpdateLetterDto, LetterResponseDto, } from './let
 export type { CreateCommentDto, CommentResponseDto } from './comment.dto';
 export type { CreateInvitationDto, InvitationResponseDto, } from './invitation.dto';
 export type { NotificationResponseDto } from './notification.dto';
+export type { LikeToggleResponseDto } from './like.dto';
 //# sourceMappingURL=index.d.ts.map

@@ -5,23 +5,24 @@
  *
  * 디자인 가이드:
  * - Pure Light 배경 + 큰 둥근 모서리 (4xl)
- * - 이미지가 있을 경우 상단에 이미지 프리뷰 표시
- * - 이미지가 없으면 파스텔 그라디언트 + Doodle placeholder
- * - 작성자, 날짜, 공개 범위, 댓글 수 표시
+ * - 이미지 캐러셀 (스와이프 + 화살표 + 도트)
+ * - 좋아요 하트 버튼 (낙관적 업데이트)
+ * - 인라인 댓글 미리보기
  * - 호버 시 부드러운 스케일 애니메이션
  */
 
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import type { PostResponseDto } from '@yuna/shared-types';
 import { Visibility } from '@yuna/shared-types';
 import Doodle from './Doodle';
+import ImageCarousel from './ImageCarousel';
+import { api } from '../lib/api';
 
 interface PostCardProps {
   post: PostResponseDto;
 }
 
-// 날짜를 상대적인 시간으로 표시 (예: "방금 전", "3시간 전")
 function formatRelativeTime(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();
@@ -43,21 +44,65 @@ function formatRelativeTime(dateStr: string): string {
   });
 }
 
-/** 게시물 인덱스 기반 placeholder 스타일 (다양성) */
 const placeholderStyles = [
-  { gradient: 'from-petal-bloom/40 to-soft-dawn/60', doodle: 'heart' as const, color: '#9B4CC4' },
-  { gradient: 'from-sky-whisper/50 to-petal-bloom/30', doodle: 'star' as const, color: '#5BA4D9' },
-  { gradient: 'from-soft-dawn/60 to-sunbeam-pop/30', doodle: 'sparkle' as const, color: '#8B7A00' },
-  { gradient: 'from-blush-berry/20 to-petal-bloom/40', doodle: 'flower' as const, color: '#C44C8B' },
+  { bg: 'bg-petal-bloom', doodle: 'heart' as const, color: '#9B4CC4' },
+  { bg: 'bg-sky-whisper', doodle: 'star' as const, color: '#5BA4D9' },
+  { bg: 'bg-soft-dawn', doodle: 'sparkle' as const, color: '#8B7A00' },
+  { bg: 'bg-petal-bloom', doodle: 'flower' as const, color: '#C44C8B' },
+];
+
+const avatarColors = [
+  'bg-sky-whisper',
+  'bg-petal-bloom',
+  'bg-soft-dawn',
+  'bg-sunbeam-pop',
+  'bg-blush-berry/30',
 ];
 
 export default function PostCard({ post }: PostCardProps) {
   const hasImages = post.mediaUrls.length > 0;
   const isPrivate = post.visibility === Visibility.PRIVATE;
 
-  // placeholder 스타일 결정 (id 해시 기반)
+  // 좋아요 상태 (낙관적 업데이트)
+  const [liked, setLiked] = useState(post.isLikedByMe);
+  const [likeCount, setLikeCount] = useState(post.likeCount);
+  const [likeAnimating, setLikeAnimating] = useState(false);
+
   const styleIdx = post.id.charCodeAt(0) % placeholderStyles.length;
   const placeholder = placeholderStyles[styleIdx];
+  const avatarColor = avatarColors[post.authorName.charCodeAt(0) % avatarColors.length];
+
+  // 좋아요 토글
+  const handleLike = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // 낙관적 업데이트
+      const newLiked = !liked;
+      setLiked(newLiked);
+      setLikeCount((prev) => prev + (newLiked ? 1 : -1));
+
+      if (newLiked) {
+        setLikeAnimating(true);
+        setTimeout(() => setLikeAnimating(false), 300);
+      }
+
+      try {
+        const babyId = document.querySelector('main')?.dataset.babyId;
+        if (babyId) {
+          await api.post<{ data: { liked: boolean; likeCount: number } }>(
+            `/babies/${babyId}/posts/${post.id}/likes`,
+          );
+        }
+      } catch {
+        // 실패 시 롤백
+        setLiked(!newLiked);
+        setLikeCount((prev) => prev + (newLiked ? -1 : 1));
+      }
+    },
+    [liked, post.id],
+  );
 
   return (
     <Link
@@ -65,43 +110,31 @@ export default function PostCard({ post }: PostCardProps) {
       className="block bg-pure-light rounded-4xl overflow-hidden shadow-card
         transition-all duration-200 hover:shadow-card-hover hover:-translate-y-1 active:scale-[0.99]"
     >
-      {/* 이미지 프리뷰 (있을 경우) */}
+      {/* 이미지 캐러셀 */}
       {hasImages && (
-        <div className="relative aspect-[4/3] bg-soft-dawn overflow-hidden">
-          <Image
-            src={post.mediaUrls[0]}
-            alt={`${post.authorName}의 게시물 이미지`}
-            fill
-            className="object-cover transition-transform duration-300 hover:scale-[1.02]"
-            sizes="(max-width: 630px) 100vw, 630px"
-          />
-          {/* 여러 장 표시 배지 */}
-          {post.mediaUrls.length > 1 && (
-            <div className="absolute top-3 right-3 bg-inkroot/60 text-pure-light text-xs font-semibold px-2.5 py-1 rounded-full">
-              +{post.mediaUrls.length - 1}
-            </div>
-          )}
-        </div>
+        <ImageCarousel
+          images={post.mediaUrls}
+          alt={`${post.authorName}의 게시물 이미지`}
+        />
       )}
 
-      {/* 이미지 없을 때: 그라디언트 placeholder */}
+      {/* 이미지 없을 때: placeholder */}
       {!hasImages && (
         <div
-          className={`relative h-40 bg-gradient-to-br ${placeholder.gradient} flex items-center justify-center`}
+          className={`relative aspect-square ${placeholder.bg} flex items-center justify-center`}
         >
-          <Doodle type={placeholder.doodle} size={48} color={placeholder.color} className="opacity-30" />
+          <Doodle type={placeholder.doodle} size={48} color={placeholder.color} className="opacity-50" />
         </div>
       )}
 
       {/* 카드 바디 */}
       <div className="p-4">
-        {/* 작성자 정보 및 메타데이터 */}
+        {/* 작성자 정보 */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2.5">
-            {/* 작성자 아바타 (이름 이니셜) */}
             <div
-              className="w-8 h-8 rounded-full bg-sky-whisper flex items-center justify-center
-                text-inkroot font-bold text-sm flex-shrink-0"
+              className={`w-8 h-8 rounded-full flex items-center justify-center
+                text-inkroot font-bold text-sm flex-shrink-0 ${avatarColor}`}
               aria-hidden="true"
             >
               {post.authorName.slice(0, 1)}
@@ -116,7 +149,6 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
           </div>
 
-          {/* 공개 범위 배지 */}
           <span
             className={[
               'text-xs font-semibold px-2.5 py-1 rounded-full',
@@ -130,17 +162,67 @@ export default function PostCard({ post }: PostCardProps) {
           </span>
         </div>
 
+        {/* 좋아요 + 댓글 액션 바 */}
+        <div className="flex items-center gap-4 mb-3">
+          {/* 좋아요 버튼 */}
+          <button
+            type="button"
+            onClick={handleLike}
+            className="flex items-center gap-1.5 group/like"
+            aria-label={liked ? '좋아요 취소' : '좋아요'}
+          >
+            <svg
+              className={`w-5 h-5 transition-all duration-200 ${
+                liked
+                  ? 'text-blush-berry fill-blush-berry'
+                  : 'text-inkroot/40 fill-none group-hover/like:text-blush-berry/60'
+              } ${likeAnimating ? 'scale-125' : 'scale-100'}`}
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+              />
+            </svg>
+            {likeCount > 0 && (
+              <span className={`text-xs font-medium ${liked ? 'text-blush-berry' : 'text-inkroot/40'}`}>
+                {likeCount}
+              </span>
+            )}
+          </button>
+
+          {/* 댓글 아이콘 */}
+          <div className="flex items-center gap-1.5 text-inkroot/40">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
+            </svg>
+            {post.commentCount > 0 && (
+              <span className="text-xs font-medium">{post.commentCount}</span>
+            )}
+          </div>
+        </div>
+
         {/* 게시물 내용 */}
         {post.content && (
-          <p className="text-sm text-inkroot/80 leading-relaxed line-clamp-3 mb-3">
+          <p className="text-sm text-inkroot/80 leading-relaxed line-clamp-3 mb-2">
             {post.content}
           </p>
         )}
 
-        {/* 촬영 날짜 (takenAt이 있을 경우) */}
+        {/* 촬영 날짜 */}
         {post.takenAt && (
-          <p className="text-xs text-inkroot/40 mb-2">
-            📷{' '}
+          <p className="text-xs text-inkroot/40 mb-2 flex items-center gap-1">
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <circle cx="12" cy="13" r="3" />
+            </svg>
             {new Date(post.takenAt).toLocaleDateString('ko-KR', {
               year: 'numeric',
               month: 'long',
@@ -149,24 +231,11 @@ export default function PostCard({ post }: PostCardProps) {
           </p>
         )}
 
-        {/* 댓글 수 */}
+        {/* 인라인 댓글 미리보기 */}
         {post.commentCount > 0 && (
-          <div className="flex items-center gap-1 text-inkroot/50">
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-            <span className="text-xs">{post.commentCount}개의 댓글</span>
-          </div>
+          <p className="text-xs text-inkroot/40 hover:text-inkroot/60 transition">
+            댓글 {post.commentCount}개 모두 보기
+          </p>
         )}
       </div>
     </Link>

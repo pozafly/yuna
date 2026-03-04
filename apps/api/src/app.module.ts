@@ -9,6 +9,7 @@ import { LetterModule } from './letter/letter.module';
 import { CommentModule } from './comment/comment.module';
 import { NotificationModule } from './notification/notification.module';
 import { StorageModule } from './storage/storage.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { StorageModule } from './storage/storage.module';
     CommentModule,
     NotificationModule,
     StorageModule,
+    LikeModule,
   ],
 })
 export class AppModule {}

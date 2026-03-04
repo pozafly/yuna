@@ -84,10 +84,10 @@ const config: Config = {
         },
       },
       boxShadow: {
-        // 카드 기본 그림자
-        card: '0 4px 24px rgba(0, 0, 0, 0.06)',
-        // 카드 호버 그림자
-        'card-hover': '0 8px 32px rgba(0, 0, 0, 0.1)',
+        // 카드 기본 그림자 (레이어드)
+        card: '0 1px 0 rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.04)',
+        // 카드 호버 그림자 (레이어드)
+        'card-hover': '0 1px 0 rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.14), 0 24px 48px rgba(0,0,0,0.06)',
         // 스티커 그림자
         sticker: '0 2px 8px rgba(0, 0, 0, 0.08)',
       },

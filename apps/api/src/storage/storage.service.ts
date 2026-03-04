@@ -77,4 +77,13 @@ export class StorageService {
 
     return { url };
   }
+
+  /** Presigned GET URL 생성 (내부용, 권한 체크 없음 — 호출자가 권한 검증 완료한 경우) */
+  async generateGetUrl(key: string): Promise<string> {
+    return this.minioClient.presignedGetObject(
+      this.bucketOriginals,
+      key,
+      5 * 60, // 5분 TTL
+    );
+  }
 }

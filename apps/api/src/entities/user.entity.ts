@@ -13,6 +13,7 @@ import type { Letter } from './letter.entity';
 import type { Comment } from './comment.entity';
 import type { Notification } from './notification.entity';
 import type { Invitation } from './invitation.entity';
+import type { Like } from './like.entity';
 
 @Entity('users')
 export class User {
@@ -59,4 +60,7 @@ export class User {
 
   @OneToMany('Invitation', 'inviter')
   sentInvitations: Invitation[];
+
+  @OneToMany('Like', 'user')
+  likes: Like[];
 }

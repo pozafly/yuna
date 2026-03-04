@@ -24,3 +24,4 @@ export type {
   InvitationResponseDto,
 } from './invitation.dto';
 export type { NotificationResponseDto } from './notification.dto';
+export type { LikeToggleResponseDto } from './like.dto';
