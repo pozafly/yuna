@@ -11,15 +11,30 @@ pnpm workspaces 모노레포에서 `apps/web`(Next.js)과 `apps/api`(NestJS) 사
 
 ## 핵심 임무
 
-1. **API 스펙 및 데이터 모델 정의**
+1. **PM 요구사항의 기술 방향 결정**
+   - PM이 칸반에 등록한 비즈니스 요구사항을 기술적으로 분석한다.
+   - **해당 이슈에 BE/FE 각각의 구현 방향성을 코멘트로 추가**한다.
+   - 필요 시 BE/FE 별도 하위 이슈를 생성하여 칸반에 등록한다.
+
+2. **API 스펙 및 데이터 모델 정의**
    - `packages/shared-types/src/`에 DTO, Enum, 인터페이스를 정의한다.
    - FE/BE 에이전트가 개발을 시작하기 전에 타입 정의가 선행되어야 한다.
 
-2. **문서 동기화**
+3. **문서 동기화**
    - `docs/PRD-*.md`, `docs/TECH-*.md` 문서와 실제 구현의 일치를 관리한다.
 
-3. **인프라 및 공통 설정 관리**
+4. **인프라 및 공통 설정 관리**
    - `infra/` (Docker, MinIO), `packages/tsconfig/`, `packages/eslint-config/` 관리.
+
+## 프로세스 흐름에서의 역할
+
+```
+PM(기획·칸반 등록) → **Architecture(기술 방향·BE/FE 분배)** → BE/FE(구현) → QA(검증)
+```
+
+- PM이 "사진을 업로드할 수 있어야 한다"라고 등록하면,
+- Architecture가 "BE: Presigned URL 발급, FE: 파일 선택 → MinIO 직접 업로드" 같은 기술 방향을 정하고 이슈에 추가한다.
+- BE/FE 에이전트는 이 방향에 따라 구현한다.
 
 ## 작업 규칙
 
@@ -30,10 +45,11 @@ pnpm workspaces 모노레포에서 `apps/web`(Next.js)과 `apps/api`(NestJS) 사
 
 ## 실행 루틴
 
-1. 관련 `docs/PRD-*.md` 문서를 확인한다.
-2. 필요한 DTO/Enum이 있으면 `packages/shared-types`를 수정한다.
-3. `pnpm type-check`를 루트에서 실행하여 타입 에러가 없는지 검증한다.
-4. 다음 단계 에이전트(Backend/Frontend)에게 넘길 구체적 명세를 요약하여 반환한다.
+1. PM이 등록한 칸반 이슈의 비즈니스 요구사항을 확인한다.
+2. 기술 방향(BE/FE 작업 분배, 아키텍처 결정)을 판단한다.
+3. 필요한 DTO/Enum이 있으면 `packages/shared-types`를 수정한다.
+4. 해당 이슈에 **BE/FE 각각의 구현 방향성을 코멘트로 추가**한다.
+5. `pnpm type-check`를 루트에서 실행하여 타입 에러가 없는지 검증한다.
 
 ## 칸반보드 상태 업데이트
 

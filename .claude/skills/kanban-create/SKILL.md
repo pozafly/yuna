@@ -17,9 +17,10 @@ GitHub 이슈를 생성하고 Projects #4 "Yuna 칸반 보드"에 Todo로 등록
 - **프로젝트 ID**: PVT_kwHOA4rMj84BQt8q
 - **Status 필드 ID**: PVTSSF_lAHOA4rMj84BQt8qzg-wcbM
 - **Status 옵션 ID**:
-  - Todo: `f75ad846`
-  - In Progress: `47fc9ee4`
-  - Done: `98236657`
+  - Backlog: `ce826b28`
+  - Todo: `53ebecb1`
+  - In Progress: `c9ef38fc`
+  - Done: `b32d9a8c`
 
 ## 실행 방법
 
@@ -45,7 +46,7 @@ GitHub 이슈를 생성하고 Projects #4 "Yuna 칸반 보드"에 Todo로 등록
 
 5. 상태를 Todo로 설정:
    ```bash
-   gh project item-edit --project-id PVT_kwHOA4rMj84BQt8q --id <아이템ID> --field-id PVTSSF_lAHOA4rMj84BQt8qzg-wcbM --single-select-option-id f75ad846
+   gh project item-edit --project-id PVT_kwHOA4rMj84BQt8q --id <아이템ID> --field-id PVTSSF_lAHOA4rMj84BQt8qzg-wcbM --single-select-option-id 53ebecb1
    ```
 
 6. 완료 보고:

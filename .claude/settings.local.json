@@ -24,7 +24,11 @@
       "Bash(gh project:*)",
       "Bash(gh auth:*)",
       "Bash(gh issue:*)",
-      "Bash(gh label:*)"
+      "Bash(gh label:*)",
+      "Skill(kanban-list)",
+      "Bash(gh:*)",
+      "Skill(kanban-update)",
+      "Bash(do gh:*)"
     ]
   }
 }

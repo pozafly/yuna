@@ -16,9 +16,10 @@ GitHub Projects #4 "Yuna 칸반 보드"의 아이템 상태를 변경합니다.
 - **프로젝트 ID**: PVT_kwHOA4rMj84BQt8q
 - **Status 필드 ID**: PVTSSF_lAHOA4rMj84BQt8qzg-wcbM
 - **Status 옵션 ID**:
-  - Todo: `f75ad846`
-  - In Progress: `47fc9ee4`
-  - Done: `98236657`
+  - Backlog: `ce826b28`
+  - Todo: `53ebecb1`
+  - In Progress: `c9ef38fc`
+  - Done: `b32d9a8c`
 
 ## 실행 방법
 
@@ -36,9 +37,10 @@ GitHub Projects #4 "Yuna 칸반 보드"의 아이템 상태를 변경합니다.
    - 텍스트이면 제목에서 키워드 검색
 
 4. 상태를 매핑한다:
-   - `todo` → `f75ad846`
-   - `progress` → `47fc9ee4`
-   - `done` → `98236657`
+   - `backlog` → `ce826b28`
+   - `todo` → `53ebecb1`
+   - `progress` → `c9ef38fc`
+   - `done` → `b32d9a8c`
 
 5. 상태 변경:
    ```bash
