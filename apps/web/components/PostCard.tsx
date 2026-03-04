@@ -48,8 +48,8 @@ export default function PostCard({ post }: PostCardProps) {
   return (
     <Link
       href={`/feed/${post.id}`}
-      className="block bg-pure-light rounded-4xl overflow-hidden shadow-sm
-        transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99]"
+      className="block bg-pure-light rounded-4xl overflow-hidden shadow-card
+        transition-all duration-200 hover:shadow-card-hover hover:-translate-y-1 active:scale-[0.99]"
     >
       {/* 이미지 프리뷰 (있을 경우) */}
       {hasImages && (
@@ -77,7 +77,7 @@ export default function PostCard({ post }: PostCardProps) {
           <div className="flex items-center gap-2.5">
             {/* 작성자 아바타 (이름 이니셜) */}
             <div
-              className="w-8 h-8 rounded-full bg-petal-bloom flex items-center justify-center
+              className="w-8 h-8 rounded-full bg-sky-whisper flex items-center justify-center
                 text-inkroot font-bold text-sm flex-shrink-0"
               aria-hidden="true"
             >

@@ -46,7 +46,7 @@ export default function NewPostPage() {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-serif text-xl font-bold text-inkroot mb-6">
+      <h2 className="font-display text-xl font-bold text-inkroot mb-6">
         새 게시물
       </h2>
 
@@ -57,7 +57,7 @@ export default function NewPostPage() {
           onChange={(e) => setContent(e.target.value)}
           placeholder="아이의 소중한 순간을 기록해 보세요..."
           rows={6}
-          className="w-full px-5 py-4 rounded-3xl bg-soft-dawn text-inkroot border-2 border-transparent placeholder:text-inkroot/40 transition-all duration-200 focus:outline-none focus:border-petal-bloom focus:bg-pure-light resize-none"
+          className="w-full px-5 py-4 rounded-3xl bg-soft-dawn text-inkroot border-2 border-transparent placeholder:text-inkroot/40 transition-all duration-200 focus:outline-none focus:border-fresh-stem/50 focus:ring-2 focus:ring-fresh-stem/10 focus:bg-pure-light resize-none"
         />
 
         {/* 공개 범위 */}
@@ -69,7 +69,7 @@ export default function NewPostPage() {
               onClick={() => setVisibility(Visibility.INVITED)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 visibility === Visibility.INVITED
-                  ? 'bg-petal-bloom text-inkroot'
+                  ? 'bg-fresh-stem text-pure-light'
                   : 'bg-soft-dawn text-inkroot/60'
               }`}
             >
@@ -80,7 +80,7 @@ export default function NewPostPage() {
               onClick={() => setVisibility(Visibility.PRIVATE)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 visibility === Visibility.PRIVATE
-                  ? 'bg-petal-bloom text-inkroot'
+                  ? 'bg-fresh-stem text-pure-light'
                   : 'bg-soft-dawn text-inkroot/60'
               }`}
             >

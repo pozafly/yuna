@@ -40,8 +40,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             'border-2 border-transparent',
             'placeholder:text-inkroot/40',
             'transition-all duration-200',
-            // Focus 효과: Petal Bloom 테두리
-            'focus:outline-none focus:border-petal-bloom focus:bg-pure-light',
+            // Focus 효과: Fresh Stem 테두리 + 은은한 링
+            'focus:outline-none focus:border-fresh-stem/50 focus:ring-2 focus:ring-fresh-stem/10 focus:bg-pure-light',
             // 에러 상태
             error ? 'border-blush-berry' : '',
             // 비활성 상태

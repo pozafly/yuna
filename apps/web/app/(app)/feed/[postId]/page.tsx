@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import CommentList from '../../../../components/CommentList';
 import CommentForm from '../../../../components/CommentForm';
+import SectionLabel from '../../../../components/SectionLabel';
+import BrandMark from '../../../../components/BrandMark';
 import { TargetType } from '@yuna/shared-types';
 import type { PostResponseDto, CommentResponseDto } from '@yuna/shared-types';
 
@@ -36,7 +38,9 @@ export default function PostDetailPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-16 animate-bounce-soft text-2xl">👶</div>
+      <div className="text-center py-16 animate-bounce-soft">
+        <BrandMark size={32} color="#DDA9F3" />
+      </div>
     );
   }
 
@@ -91,9 +95,7 @@ export default function PostDetailPage() {
 
       {/* 댓글 영역 */}
       <section>
-        <h3 className="font-serif text-lg font-bold text-inkroot mb-3">
-          댓글 ({comments.length})
-        </h3>
+        <SectionLabel>댓글 ({comments.length})</SectionLabel>
         <CommentList comments={comments} />
         <div className="mt-3">
           <CommentForm

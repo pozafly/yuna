@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import { api, ApiError } from '../../../lib/api';
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
+import Sticker from '../../../components/Sticker';
 import type { MagicLinkRequestDto } from '@yuna/shared-types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
@@ -82,9 +83,11 @@ export default function LoginPage() {
   if (isSent) {
     return (
       <div className="text-center animate-fade-in">
-        {/* 이메일 발송 완료 아이콘 */}
-        <div className="text-6xl mb-4">✉️</div>
-        <h2 className="font-serif text-2xl font-bold text-inkroot mb-3">
+        {/* 이메일 발송 완료: 스티커 장식 */}
+        <div className="mb-4">
+          <Sticker text="wow" popIn />
+        </div>
+        <h2 className="font-display text-2xl font-bold text-inkroot mb-3">
           이메일을 확인해 주세요
         </h2>
         <p className="text-inkroot/60 text-sm leading-relaxed mb-6">
@@ -110,7 +113,7 @@ export default function LoginPage() {
 
   return (
     <div className="animate-fade-in">
-      <h2 className="font-serif text-2xl font-bold text-inkroot mb-2">
+      <h2 className="font-display text-2xl font-bold text-inkroot mb-2">
         로그인
       </h2>
       <p className="text-inkroot/60 text-sm mb-8">

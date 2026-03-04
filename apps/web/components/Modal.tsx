@@ -73,7 +73,7 @@ export default function Modal({
       {/* 모달 컨텐츠 (클릭 이벤트 전파 차단) */}
       <div
         className={[
-          'relative z-10 w-full bg-pure-light',
+          'relative z-10 w-full bg-pure-light shadow-lg',
           'animate-slide-up',
           bottomSheet
             ? // 하단 시트: 하단 둥근 모서리 없음

@@ -33,7 +33,7 @@ export default function BottomNav() {
                 'flex flex-col items-center gap-0.5 px-5 py-2 rounded-full',
                 'transition-all duration-200',
                 isActive
-                  ? 'text-inkroot bg-petal-bloom'
+                  ? 'text-fresh-stem bg-fresh-stem/10'
                   : 'text-inkroot/40 hover:text-inkroot/70',
               ]
                 .filter(Boolean)

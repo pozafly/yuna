@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { navItems } from './nav-items';
 import BabySelector from './BabySelector';
+import BrandMark from './BrandMark';
 
 interface BabyInfo {
   id: string;
@@ -34,10 +35,11 @@ export default function SideNav({
 
   return (
     <nav className="hidden lg:flex fixed left-0 top-0 h-screen w-[244px] z-20 flex-col bg-pure-light border-r border-inkroot/5">
-      {/* 상단 로고 */}
-      <div className="px-6 pt-8 pb-6">
-        <h1 className="font-serif text-2xl font-bold text-inkroot">
-          Yuna&apos;s Day
+      {/* 상단 로고: 릴리 플라워 브랜드마크 + 손글씨 */}
+      <div className="px-6 pt-8 pb-6 flex items-center gap-3">
+        <BrandMark size={28} color="#339833" />
+        <h1 className="font-handwrite text-2xl text-inkroot">
+          yuna&apos;s day
         </h1>
       </div>
 
@@ -54,7 +56,7 @@ export default function SideNav({
                   'flex items-center gap-4 px-4 py-3 rounded-2xl',
                   'transition-all duration-200',
                   isActive
-                    ? 'bg-petal-bloom text-inkroot font-semibold'
+                    ? 'bg-fresh-stem/10 text-fresh-stem font-semibold'
                     : 'text-inkroot/60 hover:bg-soft-dawn hover:text-inkroot',
                 ]
                   .filter(Boolean)

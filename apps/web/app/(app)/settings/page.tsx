@@ -6,6 +6,7 @@ import { api } from '../../../lib/api';
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
 import Modal from '../../../components/Modal';
+import SectionLabel from '../../../components/SectionLabel';
 import type { CreateBabyDto, CreateInvitationDto } from '@yuna/shared-types';
 
 interface UserInfo {
@@ -75,7 +76,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h2 className="font-serif text-xl font-bold text-inkroot">설정</h2>
+      <h2 className="font-display text-xl font-bold text-inkroot">설정</h2>
 
       {/* 알림 메시지 */}
       {message && (
@@ -92,7 +93,7 @@ export default function SettingsPage() {
 
       {/* 사용자 정보 */}
       <section className="bg-pure-light rounded-4xl border border-inkroot/5 p-5">
-        <h3 className="font-serif font-bold text-inkroot mb-3">내 정보</h3>
+        <SectionLabel>내 정보</SectionLabel>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
             <span className="text-inkroot/50">이름</span>
@@ -108,7 +109,7 @@ export default function SettingsPage() {
       {/* Baby 관리 */}
       <section className="bg-pure-light rounded-4xl border border-inkroot/5 p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-serif font-bold text-inkroot">내 Baby</h3>
+          <SectionLabel className="mb-0">내 Baby</SectionLabel>
           <Button
             variant="primary"
             size="sm"

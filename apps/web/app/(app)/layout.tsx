@@ -6,6 +6,8 @@ import { api } from '../../lib/api';
 import BottomNav from '../../components/BottomNav';
 import SideNav from '../../components/SideNav';
 import BabySelector from '../../components/BabySelector';
+import BrandMark from '../../components/BrandMark';
+import Button from '../../components/Button';
 
 interface BabyInfo {
   id: string;
@@ -52,10 +54,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-bounce-soft text-4xl">
-          <span role="img" aria-label="baby">
-            👶
-          </span>
+        <div className="animate-bounce-soft">
+          <BrandMark size={48} color="#DDA9F3" />
         </div>
       </div>
     );
@@ -75,10 +75,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* 콘텐츠 래퍼 — 데스크탑에서 사이드바 너비만큼 왼쪽 마진 */}
       <div className="lg:ml-[244px]">
         {/* 모바일 상단 헤더 (데스크탑에서는 SideNav가 대체) */}
-        <header className="sticky top-0 z-10 bg-pure-light/80 backdrop-blur-sm border-b border-inkroot/5 px-4 py-3 lg:hidden">
+        <header className="sticky top-0 z-10 bg-pure-light/80 backdrop-blur-sm border-b border-inkroot/5 px-4 py-3 lg:hidden relative">
+          {/* 중앙 브랜드마크 */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+            <BrandMark size={24} color="#339833" />
+          </div>
           <div className="flex items-center justify-between">
-            <h1 className="font-serif text-xl font-bold text-inkroot">
-              Yuna&apos;s Day
+            <h1 className="font-handwrite text-xl text-inkroot">
+              yuna&apos;s day
             </h1>
             {user.babies.length > 0 && (
               <BabySelector
@@ -105,12 +109,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <p className="text-inkroot/50 text-sm mb-4">
                 아직 등록된 Baby가 없습니다.
               </p>
-              <button
+              <Button
+                variant="primary"
                 onClick={() => router.push('/settings')}
-                className="px-6 py-3 bg-petal-bloom text-inkroot font-semibold rounded-full hover:opacity-90 transition"
               >
                 Baby 등록하기
-              </button>
+              </Button>
             </div>
           )}
         </main>

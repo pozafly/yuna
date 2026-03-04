@@ -8,6 +8,7 @@
  */
 
 import type { CommentResponseDto } from '@yuna/shared-types';
+import Sticker from './Sticker';
 
 interface CommentListProps {
   comments: CommentResponseDto[];
@@ -36,7 +37,10 @@ export default function CommentList({
   if (comments.length === 0) {
     return (
       <div className="py-8 text-center">
-        <p className="text-inkroot/40 text-sm font-handwrite text-lg">
+        <div className="mb-3">
+          <Sticker text="hi!" popIn />
+        </div>
+        <p className="text-inkroot/40 font-handwrite text-lg">
           아직 댓글이 없어요
         </p>
         <p className="text-inkroot/30 text-xs mt-1">첫 댓글을 남겨보세요!</p>

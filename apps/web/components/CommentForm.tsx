@@ -127,7 +127,7 @@ export default function CommentForm({
             'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
             'transition-all duration-200',
             content.trim() && !isSubmitting
-              ? 'bg-petal-bloom text-inkroot active:scale-90 hover:bg-petal-bloom/80'
+              ? 'bg-fresh-stem text-pure-light active:scale-90 hover:bg-fresh-stem/90'
               : 'bg-soft-dawn text-inkroot/30',
           ].join(' ')}
           aria-label="댓글 전송"

@@ -4,6 +4,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '../../../lib/api';
 import Button from '../../../components/Button';
+import SectionLabel from '../../../components/SectionLabel';
+import Sticker from '../../../components/Sticker';
+import BrandMark from '../../../components/BrandMark';
 import type { LetterResponseDto } from '@yuna/shared-types';
 
 export default function LetterListPage() {
@@ -30,14 +33,16 @@ export default function LetterListPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-16 animate-bounce-soft text-2xl">💌</div>
+      <div className="text-center py-16 animate-bounce-soft">
+        <BrandMark size={32} color="#DDA9F3" />
+      </div>
     );
   }
 
   return (
     <div className="space-y-4 animate-fade-in">
+      <SectionLabel>편지</SectionLabel>
       <div className="flex items-center justify-between">
-        <h2 className="font-serif text-xl font-bold text-inkroot">편지</h2>
         <Button
           variant="primary"
           size="sm"
@@ -49,8 +54,10 @@ export default function LetterListPage() {
 
       {letters.length === 0 ? (
         <div className="text-center py-16 text-inkroot/40">
-          <p className="text-4xl mb-3">💌</p>
-          <p className="text-sm">아직 편지가 없습니다.</p>
+          <div className="mb-3">
+            <Sticker text="hi!" popIn />
+          </div>
+          <p className="font-handwrite text-lg">아직 편지가 없습니다.</p>
           <p className="text-xs mt-1">소중한 마음을 담아 편지를 써보세요.</p>
         </div>
       ) : (
@@ -59,7 +66,7 @@ export default function LetterListPage() {
             <button
               key={letter.id}
               onClick={() => router.push(`/letter/${letter.id}`)}
-              className="w-full text-left bg-soft-dawn/50 rounded-4xl p-5 border border-inkroot/5 hover:bg-soft-dawn/80 transition-all active:scale-[0.98]"
+              className="w-full text-left bg-pure-light rounded-4xl p-5 shadow-card hover:shadow-card-hover transition-all active:scale-[0.98]"
             >
               <div className="flex items-start justify-between mb-2">
                 <h3 className="font-serif font-bold text-inkroot text-base">

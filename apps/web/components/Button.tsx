@@ -5,8 +5,8 @@
  *
  * 디자인 가이드: 두껍고 둥근 필(알약) 형태, 포인트 색상 사용
  * variant별 색상:
- * - primary: Petal Bloom 배경 (메인 액션)
- * - secondary: Soft Dawn 배경 (보조 액션)
+ * - primary: Fresh Stem 배경 + Pure Light 텍스트 (메인 액션 — CTA)
+ * - secondary: 아웃라인 알약 (border-2 border-inkroot)
  * - danger: Blush Berry 배경 (위험한 액션)
  * - ghost: 테두리만 있는 투명 버튼
  */
@@ -23,9 +23,9 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<string, string> = {
   primary:
-    'bg-petal-bloom text-inkroot hover:bg-petal-bloom/80 active:bg-petal-bloom/60',
+    'bg-fresh-stem text-pure-light hover:bg-fresh-stem/90 active:bg-fresh-stem/80 hover:-translate-y-px hover:shadow-[0_4px_16px_rgba(51,152,51,0.3)]',
   secondary:
-    'bg-soft-dawn text-inkroot hover:bg-soft-dawn/80 active:bg-soft-dawn/60',
+    'bg-transparent text-inkroot border-2 border-inkroot hover:bg-inkroot/5 active:bg-inkroot/10',
   danger:
     'bg-blush-berry text-pure-light hover:bg-blush-berry/80 active:bg-blush-berry/60',
   ghost:

@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { api } from '../../../lib/api';
 import PostCard from '../../../components/PostCard';
 import Button from '../../../components/Button';
+import SectionLabel from '../../../components/SectionLabel';
+import Sticker from '../../../components/Sticker';
+import BrandMark from '../../../components/BrandMark';
 import type { PostResponseDto } from '@yuna/shared-types';
 
 export default function FeedPage() {
@@ -59,6 +62,8 @@ export default function FeedPage() {
 
   return (
     <div className="space-y-4 animate-fade-in">
+      <SectionLabel>피드</SectionLabel>
+
       {/* OWNER만 글 작성 가능 */}
       {isOwner && (
         <div className="flex justify-end">
@@ -75,8 +80,10 @@ export default function FeedPage() {
       {/* 게시물 목록 */}
       {posts.length === 0 && !loading ? (
         <div className="text-center py-16 text-inkroot/40">
-          <p className="text-4xl mb-3">📷</p>
-          <p className="text-sm">아직 게시물이 없습니다.</p>
+          <div className="mb-3">
+            <Sticker text="cute" popIn />
+          </div>
+          <p className="font-handwrite text-lg">아직 게시물이 없습니다.</p>
           {isOwner && (
             <p className="text-xs mt-1">첫 번째 사진을 올려보세요!</p>
           )}
@@ -106,7 +113,9 @@ export default function FeedPage() {
 
       {loading && (
         <div className="text-center py-8">
-          <div className="animate-bounce-soft text-2xl">👶</div>
+          <div className="animate-bounce-soft">
+            <BrandMark size={32} color="#DDA9F3" />
+          </div>
         </div>
       )}
     </div>

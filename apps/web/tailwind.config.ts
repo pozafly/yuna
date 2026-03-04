@@ -39,6 +39,8 @@ const config: Config = {
         '5xl': '2.5rem',
       },
       fontFamily: {
+        // 디스플레이/히어로용 폰트 (Playfair Display)
+        display: ['Playfair Display', 'Lora', 'Georgia', 'serif'],
         // 헤딩용 세리프 폰트
         serif: ['Lora', 'Georgia', 'serif'],
         // 본문 및 UI용 산세리프 폰트
@@ -50,6 +52,9 @@ const config: Config = {
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'bounce-soft': 'bounceSoft 0.6s ease-in-out',
+        float: 'float 3s ease-in-out infinite',
+        'sticker-pop': 'stickerPop 0.5s ease-out forwards',
+        'fade-up': 'fadeUp 0.4s ease-out forwards',
       },
       keyframes: {
         fadeIn: {
@@ -64,6 +69,27 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-4px)' },
         },
+        float: {
+          '0%, 100%': { transform: 'translateY(0) rotate(-3deg)' },
+          '50%': { transform: 'translateY(-6px) rotate(3deg)' },
+        },
+        stickerPop: {
+          '0%': { transform: 'scale(0) rotate(-20deg)', opacity: '0' },
+          '70%': { transform: 'scale(1.1) rotate(3deg)', opacity: '1' },
+          '100%': { transform: 'scale(1) rotate(-2deg)', opacity: '1' },
+        },
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      boxShadow: {
+        // 카드 기본 그림자
+        card: '0 4px 24px rgba(0, 0, 0, 0.06)',
+        // 카드 호버 그림자
+        'card-hover': '0 8px 32px rgba(0, 0, 0, 0.1)',
+        // 스티커 그림자
+        sticker: '0 2px 8px rgba(0, 0, 0, 0.08)',
       },
       backdropBlur: {
         // 네비게이션 dock의 유리 질감 효과
