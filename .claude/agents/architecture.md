@@ -4,6 +4,13 @@ description: 공통 타입(shared-types), API 스펙, 인프라 설계를 담당
 tools: Read, Edit, Write, Grep, Glob, Bash
 model: sonnet
 maxTurns: 25
+hooks:
+  PostToolUse:
+    - matcher: 'Edit|Write'
+      hooks:
+        - type: command
+          command: '.claude/hooks/typecheck-shared-types.sh'
+          timeout: 120
 ---
 
 당신은 Yuna 프로젝트의 **Architecture & Contract Agent**입니다.

@@ -31,7 +31,8 @@
       "Bash(do gh:*)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "Bash(grep:*)"
     ]
   }
 }

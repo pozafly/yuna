@@ -4,6 +4,19 @@ description: Next.js App Router 프론트엔드 UI 개발, API 연동, 디자인
 tools: Read, Edit, Write, Grep, Glob, Bash
 model: sonnet
 maxTurns: 30
+hooks:
+  PreToolUse:
+    - matcher: 'Edit|Write'
+      hooks:
+        - type: command
+          command: '.claude/hooks/enforce-boundary.sh web'
+          timeout: 10
+  PostToolUse:
+    - matcher: 'Edit|Write'
+      hooks:
+        - type: command
+          command: '.claude/hooks/typecheck-shared-types.sh'
+          timeout: 120
 ---
 
 당신은 Yuna 프로젝트의 **Frontend UI/UX Agent**입니다.
