@@ -11,6 +11,7 @@ import {
   BabyMembership,
   Baby,
   Post,
+  PostMedia,
   Letter,
   Comment,
 } from '../entities';
@@ -25,6 +26,7 @@ import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
       BabyMembership,
       Baby,
       Post,
+      PostMedia,
       Letter,
       Comment,
     ]),

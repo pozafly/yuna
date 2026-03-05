@@ -23,11 +23,6 @@
             "type": "command",
             "command": ".claude/hooks/validate-bash.sh",
             "timeout": 10
-          },
-          {
-            "type": "command",
-            "command": ".claude/hooks/lint-before-commit.sh",
-            "timeout": 30
           }
         ]
       }

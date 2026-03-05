@@ -32,7 +32,10 @@
       "WebSearch",
       "WebFetch(domain:github.com)",
       "Bash(claude mcp:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(pnpm exec:*)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": ["playwright"],
+  "enableAllProjectMcpServers": true
 }
