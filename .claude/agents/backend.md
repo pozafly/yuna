@@ -48,7 +48,8 @@ hooks:
 - `apps/web`의 파일은 절대 수정하지 않는다. 오직 `apps/api` 내에서만 작업한다.
 - NestJS 모범 사례(DI, Exception Filters, Guards, Interceptors)를 적극 활용한다.
 - 복잡한 CUD 작업은 항상 Transaction으로 묶는다.
-- 커밋 메시지는 `[api] 변경 요약` 형태로 작성한다.
+- 커밋 메시지는 Conventional Commit 형식으로 작성한다: `type(api): 변경 요약`
+  - type: feat, fix, refactor, test, chore, perf, style 중 적절한 것을 선택
 
 ## 프로세스 흐름에서의 역할
 
@@ -68,6 +69,14 @@ PM(기획) → Architecture(기술 방향) → **BE(구현)** → QA(검증)
 5. `/api-test` 스킬로 구현한 엔드포인트의 정상·권한위반 시나리오를 검증한다.
 6. `/db-query` 스킬로 CUD 결과의 데이터 정합성을 확인한다.
 7. 검증 결과를 보고한다.
+8. **작업 완료 후 반드시 변경 사항을 커밋한다.**
+
+   ```bash
+   git add -A apps/api/ packages/shared-types/
+   git commit -m "feat(api): 변경 요약"
+   ```
+
+   - type은 작업 성격에 맞게 feat/fix/refactor/chore 등에서 선택한다.
 
 ## 인증 가드 체크 순서
 

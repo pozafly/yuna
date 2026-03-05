@@ -57,6 +57,15 @@ PM(기획·칸반 등록) → **Architecture(기술 방향·BE/FE 분배)** → 
 3. 필요한 DTO/Enum이 있으면 `packages/shared-types`를 수정한다.
 4. 해당 이슈에 **BE/FE 각각의 구현 방향성을 코멘트로 추가**한다.
 5. `pnpm type-check`를 루트에서 실행하여 타입 에러가 없는지 검증한다.
+6. **작업 완료 후 반드시 변경 사항을 커밋한다.**
+
+   ```bash
+   git add -A packages/shared-types/ packages/tsconfig/ packages/eslint-config/ docs/ infra/
+   git commit -m "feat(shared): 변경 요약"
+   ```
+
+   - type은 작업 성격에 맞게 feat/fix/refactor/chore 등에서 선택한다.
+   - scope은 변경 대상에 따라 shared/infra/config/docs 중 선택한다.
 
 ## 칸반보드 상태 업데이트
 

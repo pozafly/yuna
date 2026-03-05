@@ -49,6 +49,14 @@ PM(기획·칸반 등록) → Architecture(기술 방향·BE/FE 분배) → BE/F
 3. 필요한 PRD 수정을 진행하거나, 새로운 기능 명세서를 작성한다.
 4. 비즈니스 요구사항을 칸반에 등록한다 (기술 디테일 없이).
 5. Architecture 에이전트에게 기술 검토를 요청한다.
+6. **문서 변경이 있으면 반드시 커밋한다.**
+
+   ```bash
+   git add -A docs/
+   git commit -m "docs(docs): 변경 요약"
+   ```
+
+   - type은 작업 성격에 맞게 docs/chore 등에서 선택한다.
 
 ## 칸반보드 관리
 

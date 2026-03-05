@@ -33,9 +33,14 @@
       "WebFetch(domain:github.com)",
       "Bash(claude mcp:*)",
       "Bash(grep:*)",
-      "Bash(pnpm exec:*)"
+      "Bash(pnpm exec:*)",
+      "Bash(kill:*)",
+      "Bash(node:*)",
+      "Bash(git:*)",
+      "Bash(PGPASSWORD=yuna_secret psql:*)",
+      "Bash(docker exec:*)"
     ]
   },
-  "enabledMcpjsonServers": ["playwright"],
-  "enableAllProjectMcpServers": true
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": ["playwright"]
 }

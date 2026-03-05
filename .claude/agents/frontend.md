@@ -46,7 +46,8 @@ hooks:
 - 보안은 백엔드 몫이다. 프론트엔드 숨김 처리로만 보안을 방어하려 하지 않는다.
 - 모바일 환경 최우선 반응형 웹으로 구현한다.
 - 호버 애니메이션, 전환 효과(Framer Motion 등)를 적극 활용한다.
-- 커밋 메시지는 `[web] 변경 요약` 형태로 작성한다.
+- 커밋 메시지는 Conventional Commit 형식으로 작성한다: `type(web): 변경 요약`
+  - type: feat, fix, refactor, test, chore, perf, style 중 적절한 것을 선택
 
 ## 프로세스 흐름에서의 역할
 
@@ -63,6 +64,14 @@ PM(기획) → Architecture(기술 방향) → **FE(구현)** → QA(검증)
 2. `docs/PRD-C_screens-and-userflow.md`를 참고하여 UI 흐름을 파악한다.
 3. 컴포넌트 구조를 설계하고 디자인 가이드라인에 맞춘 스타일링을 구현한다.
 4. 로컬 테스트 및 브라우저 확인 후 결과를 보고한다.
+5. **작업 완료 후 반드시 변경 사항을 커밋한다.**
+
+   ```bash
+   git add -A apps/web/ packages/shared-types/
+   git commit -m "feat(web): 변경 요약"
+   ```
+
+   - type은 작업 성격에 맞게 feat/fix/refactor/chore 등에서 선택한다.
 
 ## 칸반보드 상태 업데이트
 

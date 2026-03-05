@@ -8,6 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 코드 수정 시 기존 스타일(Prettier 설정)을 반드시 따른다.
 - 새로운 라이브러리를 설치할 때는 반드시 사용자 허락을 구한다.
 - 주석은 친절하고 구체적으로 작성한다.
+- 커밋 메시지는 **Conventional Commit** 형식을 따른다 (commitlint 적용됨):
+  - 형식: `type(scope): 설명`
+  - type: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+  - scope: `api`, `web`, `shared`, `infra`, `docs`, `config`
+  - 예시: `feat(api): 매직링크 인증 엔드포인트 추가`, `fix(web): 피드 무한스크롤 버그 수정`
 
 ---
 
@@ -36,14 +41,14 @@ pnpm --filter web dev   # Next.js (포트 3001)
 
 ### 주요 명령어
 
-| 명령어 | 설명 |
-|--------|------|
-| `pnpm build` | 전체 빌드 (의존성 그래프 순서 자동 결정) |
-| `pnpm lint` | 전체 workspace lint |
-| `pnpm test` | 전체 테스트 |
-| `pnpm type-check` | 전체 TypeScript 타입 검사 |
-| `pnpm --filter web <cmd>` | FE 패키지 단독 명령 |
-| `pnpm --filter api <cmd>` | BE 패키지 단독 명령 |
+| 명령어                    | 설명                                     |
+| ------------------------- | ---------------------------------------- |
+| `pnpm build`              | 전체 빌드 (의존성 그래프 순서 자동 결정) |
+| `pnpm lint`               | 전체 workspace lint                      |
+| `pnpm test`               | 전체 테스트                              |
+| `pnpm type-check`         | 전체 TypeScript 타입 검사                |
+| `pnpm --filter web <cmd>` | FE 패키지 단독 명령                      |
+| `pnpm --filter api <cmd>` | BE 패키지 단독 명령                      |
 
 ### 환경변수
 
@@ -92,9 +97,9 @@ import { CreatePostDto, Visibility, Role } from '@yuna/shared-types';
 
 ### 역할 (Role)
 
-| 역할 | 설명 |
-|------|------|
-| `OWNER` | Baby를 생성·관리하는 사람. 공동 OWNER 허용. |
+| 역할      | 설명                                              |
+| --------- | ------------------------------------------------- |
+| `OWNER`   | Baby를 생성·관리하는 사람. 공동 OWNER 허용.       |
 | `INVITED` | OWNER로부터 이메일 초대를 받고 승인한 가족 구성원 |
 
 ### Visibility
@@ -131,17 +136,17 @@ import { CreatePostDto, Visibility, Role } from '@yuna/shared-types';
 
 ## BE 모듈 구조 (`apps/api/src/`)
 
-| 모듈 | 역할 |
-|------|------|
-| `auth/` | 매직링크, OAuth, 세션 관리 |
-| `baby/` | Baby CRUD, 접근 제어 |
-| `invitation/` | 초대 생성/검증/수락 |
-| `post/` | Post + PostMedia CRUD |
-| `letter/` | Letter CRUD (타임캡슐) |
-| `comment/` | Comment CRUD |
-| `notification/` | 알림 발송 |
-| `storage/` | MinIO presigned URL 발급 |
-| `common/` | 가드, 데코레이터, 미들웨어, 필터 |
+| 모듈            | 역할                             |
+| --------------- | -------------------------------- |
+| `auth/`         | 매직링크, OAuth, 세션 관리       |
+| `baby/`         | Baby CRUD, 접근 제어             |
+| `invitation/`   | 초대 생성/검증/수락              |
+| `post/`         | Post + PostMedia CRUD            |
+| `letter/`       | Letter CRUD (타임캡슐)           |
+| `comment/`      | Comment CRUD                     |
+| `notification/` | 알림 발송                        |
+| `storage/`      | MinIO presigned URL 발급         |
+| `common/`       | 가드, 데코레이터, 미들웨어, 필터 |
 
 ---
 
@@ -159,12 +164,12 @@ import { CreatePostDto, Visibility, Role } from '@yuna/shared-types';
 
 ## 로컬 인프라 포트
 
-| 서비스 | 포트 |
-|--------|------|
-| PostgreSQL | 5432 |
-| MinIO API | 9000 |
+| 서비스        | 포트                                  |
+| ------------- | ------------------------------------- |
+| PostgreSQL    | 5432                                  |
+| MinIO API     | 9000                                  |
 | MinIO Console | 9001 (`minio_admin` / `minio_secret`) |
-| NestJS API | 3000 |
-| Next.js Web | 3001 |
+| NestJS API    | 3000                                  |
+| Next.js Web   | 3001                                  |
 
 > `docker compose down -v`는 볼륨까지 삭제하므로 주의.
