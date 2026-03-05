@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../../../lib/api';
 import PostCard from '../../../components/PostCard';
+import CommentBottomSheet from '../../../components/CommentBottomSheet';
 import Button from '../../../components/Button';
 import Sticker from '../../../components/Sticker';
 import BrandMark from '../../../components/BrandMark';
@@ -17,16 +18,24 @@ import type { ImageUploaderRef } from '../../../components/ImageUploader';
 export default function FeedPage() {
   const [posts, setPosts] = useState<PostResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
   // 게시물 작성 모달 상태
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newContent, setNewContent] = useState('');
-  const [newVisibility, setNewVisibility] = useState<Visibility>(Visibility.INVITED);
+  const [newVisibility, setNewVisibility] = useState<Visibility>(
+    Visibility.INVITED,
+  );
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
   const uploaderRef = useRef<ImageUploaderRef>(null);
+
+  // 댓글 바텀시트 상태
+  // activeCommentPostId가 null이면 닫힘, string이면 해당 postId의 바텀시트 열림
+  const [activeCommentPostId, setActiveCommentPostId] = useState<string | null>(
+    null,
+  );
+  const [activeCommentCount, setActiveCommentCount] = useState(0);
 
   const getBabyInfo = useCallback(() => {
     const main = document.querySelector('main');
@@ -83,7 +92,6 @@ export default function FeedPage() {
         if (entries[0].isIntersecting && !loadingRef.current) {
           const nextPage = pageRef.current + 1;
           pageRef.current = nextPage;
-          setPage(nextPage);
           loadingRef.current = true;
           loadPosts(nextPage).finally(() => {
             loadingRef.current = false;
@@ -97,7 +105,7 @@ export default function FeedPage() {
     return () => observer.disconnect();
   }, [loadPosts, hasMore]);
 
-  // 모달 열릴 때 배경 스크롤 방지
+  // 게시물 작성 모달 열릴 때 배경 스크롤 방지
   useEffect(() => {
     if (showCreateModal) {
       document.body.style.overflow = 'hidden';
@@ -109,7 +117,7 @@ export default function FeedPage() {
     };
   }, [showCreateModal]);
 
-  // ESC로 모달 닫기
+  // ESC로 게시물 작성 모달 닫기
   useEffect(() => {
     if (!showCreateModal) return;
     const handleKey = (e: KeyboardEvent) => {
@@ -117,7 +125,7 @@ export default function FeedPage() {
     };
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showCreateModal]);
 
   const openModal = () => {
@@ -162,7 +170,6 @@ export default function FeedPage() {
       setShowCreateModal(false);
       // 피드 새로고침 (첫 페이지부터)
       pageRef.current = 1;
-      setPage(1);
       loadPosts(1, true);
     } catch {
       setCreateError('게시물 작성에 실패했습니다.');
@@ -170,6 +177,39 @@ export default function FeedPage() {
       setCreating(false);
     }
   };
+
+  /**
+   * 댓글 바텀시트 열기 핸들러
+   * PostCard에서 호출되며 해당 게시물의 postId와 commentCount를 전달받는다.
+   */
+  const handleOpenComments = useCallback(
+    (postId: string) => {
+      const targetPost = posts.find((p) => p.id === postId);
+      setActiveCommentPostId(postId);
+      setActiveCommentCount(targetPost?.commentCount ?? 0);
+    },
+    [posts],
+  );
+
+  /** 댓글 바텀시트 닫기 */
+  const handleCloseComments = useCallback(() => {
+    setActiveCommentPostId(null);
+    setActiveCommentCount(0);
+  }, []);
+
+  /**
+   * 댓글 추가 완료 콜백
+   * 해당 게시물의 commentCount를 +1 갱신한다.
+   */
+  const handleCommentAdded = useCallback((postId: string) => {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId ? { ...p, commentCount: p.commentCount + 1 } : p,
+      ),
+    );
+    // 바텀시트 헤더의 commentCount도 실시간 반영
+    setActiveCommentCount((prev) => prev + 1);
+  }, []);
 
   const { role, babyName, babyBirthDate, babyId } = getBabyInfo();
   const isOwner = role === 'OWNER';
@@ -199,10 +239,14 @@ export default function FeedPage() {
             <Doodle type="heart" size={18} color="var(--color-blush-berry)" />
             <Doodle type="star" size={20} color="var(--color-sunbeam-pop)" />
           </div>
-          <p className="display-tagline text-inkroot/60">아직 게시물이 없어요</p>
+          <p className="display-tagline text-inkroot/60">
+            아직 게시물이 없어요
+          </p>
           {isOwner && (
             <div className="space-y-2">
-              <p className="text-sm text-inkroot/50">첫 번째 사진을 올려보세요!</p>
+              <p className="text-sm text-inkroot/50">
+                첫 번째 사진을 올려보세요!
+              </p>
               <Button variant="primary" size="sm" onClick={openModal}>
                 + 첫 게시물 작성
               </Button>
@@ -211,7 +255,11 @@ export default function FeedPage() {
         </div>
       ) : (
         posts.map((post) => (
-          <PostCard key={post.id} post={post} />
+          <PostCard
+            key={post.id}
+            post={post}
+            onOpenComments={handleOpenComments}
+          />
         ))
       )}
 
@@ -243,8 +291,18 @@ export default function FeedPage() {
             flex items-center justify-center z-40"
           aria-label="새 게시물 작성"
         >
-          <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          <svg
+            className="w-7 h-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
         </button>
       )}
@@ -286,7 +344,11 @@ export default function FeedPage() {
             <form onSubmit={handleCreate} className="p-5 space-y-5">
               {/* 사진 첨부 */}
               {babyId && (
-                <ImageUploader ref={uploaderRef} babyId={babyId} maxFiles={10} />
+                <ImageUploader
+                  ref={uploaderRef}
+                  babyId={babyId}
+                  maxFiles={10}
+                />
               )}
 
               {/* 본문 */}
@@ -304,7 +366,9 @@ export default function FeedPage() {
 
               {/* 공개 범위 */}
               <div className="flex items-center gap-3">
-                <span className="text-sm font-semibold text-inkroot">공개 범위</span>
+                <span className="text-sm font-semibold text-inkroot">
+                  공개 범위
+                </span>
                 <div className="flex gap-2">
                   <button
                     type="button"
@@ -338,6 +402,14 @@ export default function FeedPage() {
           </div>
         </div>
       )}
+
+      {/* 댓글 바텀시트 (피드 JSX 최하단에 렌더링) */}
+      <CommentBottomSheet
+        postId={activeCommentPostId}
+        commentCount={activeCommentCount}
+        onClose={handleCloseComments}
+        onCommentAdded={handleCommentAdded}
+      />
     </div>
   );
 }

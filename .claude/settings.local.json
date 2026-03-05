@@ -38,7 +38,8 @@
       "Bash(node:*)",
       "Bash(git:*)",
       "Bash(PGPASSWORD=yuna_secret psql:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Read(//private/tmp/**)"
     ]
   },
   "enableAllProjectMcpServers": true,

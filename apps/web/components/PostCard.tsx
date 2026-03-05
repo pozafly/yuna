@@ -7,20 +7,22 @@
  * - Pure Light 배경 + 큰 둥근 모서리 (4xl)
  * - 이미지 캐러셀 (스와이프 + 화살표 + 도트)
  * - 좋아요 하트 버튼 (낙관적 업데이트)
- * - 인라인 댓글 미리보기
+ * - 인라인 댓글 미리보기 (IntersectionObserver 기반 지연 fetch)
+ * - "댓글 N개 모두 보기" → 바텀시트 오픈
  * - 호버 시 부드러운 스케일 애니메이션
  */
 
 import { useState, useCallback } from 'react';
-import Link from 'next/link';
 import type { PostResponseDto } from '@yuna/shared-types';
 import { Visibility } from '@yuna/shared-types';
 import Doodle from './Doodle';
 import ImageCarousel from './ImageCarousel';
 import { api } from '../lib/api';
+import { useCommentPreview } from '../hooks/useCommentPreview';
 
 interface PostCardProps {
   post: PostResponseDto;
+  onOpenComments: (postId: string) => void;
 }
 
 function formatRelativeTime(dateStr: string): string {
@@ -59,7 +61,7 @@ const avatarColors = [
   'bg-blush-berry/30',
 ];
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, onOpenComments }: PostCardProps) {
   const hasImages = post.mediaUrls.length > 0;
   const isPrivate = post.visibility === Visibility.PRIVATE;
 
@@ -68,14 +70,20 @@ export default function PostCard({ post }: PostCardProps) {
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [likeAnimating, setLikeAnimating] = useState(false);
 
+  // 댓글 미리보기 (viewport 진입 시 fetch)
+  const { previewComments, cardRef } = useCommentPreview(
+    post.id,
+    post.commentCount,
+  );
+
   const styleIdx = post.id.charCodeAt(0) % placeholderStyles.length;
   const placeholder = placeholderStyles[styleIdx];
-  const avatarColor = avatarColors[post.authorName.charCodeAt(0) % avatarColors.length];
+  const avatarColor =
+    avatarColors[post.authorName.charCodeAt(0) % avatarColors.length];
 
   // 좋아요 토글
   const handleLike = useCallback(
     async (e: React.MouseEvent) => {
-      e.preventDefault();
       e.stopPropagation();
 
       // 낙관적 업데이트
@@ -104,10 +112,20 @@ export default function PostCard({ post }: PostCardProps) {
     [liked, post.id],
   );
 
+  // 댓글 아이콘 / "모두 보기" 클릭 → 바텀시트 오픈
+  const handleOpenComments = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      onOpenComments(post.id);
+    },
+    [post.id, onOpenComments],
+  );
+
   return (
-    <Link
-      href={`/feed/${post.id}`}
-      className="block bg-pure-light rounded-4xl overflow-hidden shadow-card
+    // Link 제거 → article 태그로 교체 (인라인 캐러셀 + 댓글 바텀시트 사용)
+    <article
+      ref={cardRef as React.RefObject<HTMLElement>}
+      className="bg-pure-light rounded-4xl overflow-hidden shadow-card
         transition-all duration-200 hover:shadow-card-hover hover:-translate-y-1 active:scale-[0.99]"
     >
       {/* 이미지 캐러셀 */}
@@ -123,7 +141,12 @@ export default function PostCard({ post }: PostCardProps) {
         <div
           className={`relative aspect-square ${placeholder.bg} flex items-center justify-center`}
         >
-          <Doodle type={placeholder.doodle} size={48} color={placeholder.color} className="opacity-50" />
+          <Doodle
+            type={placeholder.doodle}
+            size={48}
+            color={placeholder.color}
+            className="opacity-50"
+          />
         </div>
       )}
 
@@ -188,15 +211,29 @@ export default function PostCard({ post }: PostCardProps) {
               />
             </svg>
             {likeCount > 0 && (
-              <span className={`text-xs font-medium ${liked ? 'text-blush-berry' : 'text-inkroot/40'}`}>
+              <span
+                className={`text-xs font-medium ${liked ? 'text-blush-berry' : 'text-inkroot/40'}`}
+              >
                 {likeCount}
               </span>
             )}
           </button>
 
-          {/* 댓글 아이콘 */}
-          <div className="flex items-center gap-1.5 text-inkroot/40">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          {/* 댓글 아이콘 버튼 → 바텀시트 오픈 */}
+          <button
+            type="button"
+            onClick={handleOpenComments}
+            className="flex items-center gap-1.5 text-inkroot/40
+              hover:text-inkroot/70 transition-colors duration-150"
+            aria-label="댓글 보기"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -206,7 +243,7 @@ export default function PostCard({ post }: PostCardProps) {
             {post.commentCount > 0 && (
               <span className="text-xs font-medium">{post.commentCount}</span>
             )}
-          </div>
+          </button>
         </div>
 
         {/* 게시물 내용 */}
@@ -219,8 +256,18 @@ export default function PostCard({ post }: PostCardProps) {
         {/* 촬영 날짜 */}
         {post.takenAt && (
           <p className="text-xs text-inkroot/40 mb-2 flex items-center gap-1">
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
               <circle cx="12" cy="13" r="3" />
             </svg>
             {new Date(post.takenAt).toLocaleDateString('ko-KR', {
@@ -232,12 +279,45 @@ export default function PostCard({ post }: PostCardProps) {
         )}
 
         {/* 인라인 댓글 미리보기 */}
-        {post.commentCount > 0 && (
-          <p className="text-xs text-inkroot/40 hover:text-inkroot/60 transition">
-            댓글 {post.commentCount}개 모두 보기
-          </p>
+        {post.commentCount > 0 ? (
+          <div className="space-y-1.5 mt-2">
+            {/* 최신 댓글 2개 미리보기 */}
+            {previewComments.map((comment) => (
+              <p
+                key={comment.id}
+                className="text-xs text-inkroot/70 leading-snug line-clamp-1"
+              >
+                {/* compact 인라인: "작성자 · 내용" 1줄 말줄임 */}
+                <span className="font-semibold text-inkroot/80 mr-1">
+                  {comment.authorName}
+                </span>
+                <span className="text-inkroot/50">·</span>
+                <span className="ml-1">{comment.content}</span>
+              </p>
+            ))}
+
+            {/* "댓글 N개 모두 보기" 링크 */}
+            <button
+              type="button"
+              onClick={handleOpenComments}
+              className="text-xs text-inkroot/40 hover:text-inkroot/70
+                transition-colors duration-150 text-left"
+            >
+              댓글 {post.commentCount}개 모두 보기
+            </button>
+          </div>
+        ) : (
+          /* 댓글이 없을 때 */
+          <button
+            type="button"
+            onClick={handleOpenComments}
+            className="text-xs text-inkroot/30 hover:text-inkroot/50
+              transition-colors duration-150 mt-2 text-left"
+          >
+            첫 댓글을 남겨보세요
+          </button>
         )}
       </div>
-    </Link>
+    </article>
   );
 }
